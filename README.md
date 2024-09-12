@@ -143,3 +143,24 @@ python manage.py runserver
 ---
 
 ## Steps to run it in container env (Docker)
+
+### For env
+
+```sh
+CELERY_RESULT_BACKEND=redis://redis:6379/0
+CELERY_BROKER_URL=redis://redis:6379/0
+```
+
+### To get insite db container
+
+```sh
+docker exec -it your_postgres_container_name /bin/bash
+```
+
+```sh
+psql -U myuser -d mydb
+```
+
+---
+
+## CI/CD Pipeline with Jenkins
