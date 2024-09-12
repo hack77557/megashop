@@ -85,6 +85,10 @@ volumes:
   static_data:
   media_data:
 
+networks:
+  my-network:
+    driver: bridge
+
 services:
   db:
     image: postgres:13.0-alpine
@@ -93,6 +97,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: always
+    networks:
+      - my-network
 
   backend:
     build: ./core
@@ -113,6 +119,8 @@ services:
       python manage.py collectstatic --noinput &&
       gunicorn project.wsgi:application --bind 0.0.0.0:8000 &&
       stripe listen --forward-to localhost:8000/payment/webhook-stripe/"
+    networks:
+      - my-network
 
   redis:
     image: redis:7.2.3-alpine
@@ -120,6 +128,8 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+    networks:
+      - my-network
 
   celery:
     build: ./core
@@ -132,6 +142,8 @@ services:
       - static_data:/app/static
     restart: always
     command: celery -A project worker --loglevel=info
+    networks:
+      - my-network
 
   celery-beat:
     build: ./core
@@ -144,6 +156,8 @@ services:
       - static_data:/app/static
     restart: always
     command: python -m celery -A project beat --loglevel=info
+    networks:
+      - my-network
 
   nginx:
     image: nginx:latest
@@ -155,3 +169,9 @@ services:
     ports:
       - 80:80
     restart: always
+    depends_on:
+      - db
+      - backend
+      - redis
+    networks:
+      - my-network
