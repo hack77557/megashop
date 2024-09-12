@@ -55,7 +55,7 @@ To get the `STRIPE_WEBHOOK_SECRET`, follow these steps to use Stripe's Webhook f
 
    - Go to the **Developers > Webhooks** section.
    - Click on **Add Endpoint**.
-   - Set the URL where you want to listen for Stripe events (for example, `https://yourdomain.com/payment/stripe-webhook/`).
+   - Set the URL where you want to listen for Stripe events (for example, `http://<public IP>/payment/stripe-webhook/`).
    - After setting it up, you can view the `STRIPE_WEBHOOK_SECRET` from the dashboard.
 
 ---
