@@ -94,6 +94,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # 'django.template.context_processors.settings', # this is new
                 
                 # Custom Context Processors
                 'shop.context_processors.categories',
@@ -228,7 +229,7 @@ EMAIL_MAIL_CALLBACK = email_verified_callback
 
 # For Django Email Backend
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -250,7 +251,8 @@ YOOKASSA_SHOP_ID = env('YOOKASSA_SHOP_ID')
 
 # Google Fonts
 # FIXME: django_google_fonts: Failed to get font: Montserrat:wght@300,400,500, got status code: 400
-GOOGLE_FONTS = ['Montserrat:wght@300,400,500', 'Roboto']
+# GOOGLE_FONTS = ['Montserrat:wght@300,400,500', 'Roboto']
+GOOGLE_FONTS = ['Montserrat:wght@300;400;500', 'Roboto']
 GOOGLE_FONTS_DIR = BASE_DIR / 'static'
 
 
