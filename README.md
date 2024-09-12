@@ -161,6 +161,24 @@ docker exec -it your_postgres_container_name /bin/bash
 psql -U myuser -d mydb
 ```
 
+```sh
+
+$ docker images
+REPOSITORY                        TAG            IMAGE ID       CREATED             SIZE
+fullstack-ecommerce-celery        latest         00f3e2f91984   About an hour ago   909MB
+fullstack-ecommerce-celery-beat   latest         dede52007b1b   About an hour ago   909MB
+fullstack-ecommerce-backend       latest         141b947b999c   About an hour ago   909MB
+nginx                             latest         39286ab8a5e1   4 weeks ago         188MB
+redis                             7.2.3-alpine   d2d4688fcebe   9 months ago        41MB
+postgres                          13.0-alpine    700e581c202e   3 years ago         159MB
+```
+
+#### DockerHUB images
+
+faizan44/fullstack-ecommerce-backend
+faizan44/fullstack-ecommerce-celery
+faizan44/fullstack-ecommerce-celery-beat
+
 ---
 
 ## CI/CD Pipeline with Jenkins

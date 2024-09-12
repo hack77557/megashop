@@ -111,7 +111,8 @@ services:
       - my-network
 
   backend:
-    build: ./core
+    image: faizan44/fullstack-ecommerce-backend
+    # build: ./core
     env_file: .env
     volumes:
       - static_data:/app/static
@@ -129,7 +130,8 @@ services:
       - my-network
 
   celery:
-    build: ./core
+    image: faizan44/fullstack-ecommerce-celery
+    # build: ./core
     env_file: .env
     depends_on:
       - db
@@ -140,7 +142,8 @@ services:
     restart: always
 
   celery-beat:
-    build: ./core
+    image: faizan44/fullstack-ecommerce-celery-beat
+    # build: ./core
     env_file: .env
     depends_on:
       - db
