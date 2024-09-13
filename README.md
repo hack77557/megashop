@@ -147,6 +147,8 @@ python manage.py runserver
 ### For env
 
 ```sh
+POSTGRES_HOST=db
+
 CELERY_RESULT_BACKEND=redis://redis:6379/0
 CELERY_BROKER_URL=redis://redis:6379/0
 ```
