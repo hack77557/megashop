@@ -20,9 +20,8 @@ pipeline {
         stage('Run Docker Compose') {
             steps {
                 withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
-                    sh 'ls -a'  
-                    sh 'cp $ENV_FILE .'  
-                    sh 'ls -a'  
+                    // sh 'ls -a'  
+                    // sh 'cp $ENV_FILE .'
                     sh 'docker compose up -d'
                     echo 'Up and Running...'
                 }
