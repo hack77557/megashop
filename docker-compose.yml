@@ -146,6 +146,7 @@ services:
     # build: ./core
     env_file: .env
     depends_on:
+      - celery
       - db
       - redis
     command: celery -A project beat --loglevel=info
