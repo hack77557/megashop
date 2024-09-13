@@ -1,8 +1,12 @@
 pipeline {
     agent any
 
+    // environment {
+    //     ENV_FILE_ID = 'my-env-file'
+    // }
+
     environment {
-        ENV_FILE_ID = 'my-env-file'
+        ENV_FILE_ID = credentials('my-env-file')
     }
 
     stages {
