@@ -21,7 +21,7 @@ pipeline {
             steps {
                 withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
                     sh 'ls -a'  
-                    sh 'cp $ENV_FILE .env'  
+                    sh 'cp $ENV_FILE .'  
                     sh 'ls -a'  
                     sh 'docker compose up -d'
                     echo 'Up and Running...'
