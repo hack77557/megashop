@@ -1,49 +1,9 @@
-// pipeline {
-//     agent any
-
-//     // environment {
-//     //     ENV_FILE_ID = 'my-env-file'
-//     // }
-
-//     environment {
-//         ENV_FILE_ID = credentials('my-env-file')
-//     }
-
-//     stages {
-//         stage('Checkout Code') {
-//             steps {
-//                 git url: "https://github.com/faizan35/fullstack-ecommerce.git", branch: "main"
-//                 echo 'code clone done.'
-//             }
-//         }
-
-//         stage('Run Docker Compose') {
-//             steps {
-//                 withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
-//                     // sh 'ls -a'  
-//                     // sh 'cp $ENV_FILE .'
-//                     sh 'docker compose up -d'
-//                     echo 'Up and Running...'
-//                 }
-//             }
-//         }
-//     }
-// }
-
-
-
-
-// #########################################
-
-
-
-
-
 pipeline {
     agent any
 
+
     environment {
-        ENV_FILE_ID = 'my-env-file'
+        ENV_FILE_ID = credentials('my-env-file')
     }
 
     stages {
@@ -54,51 +14,89 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                echo 'Docker Building done.'
-            }
-        }
-
-        stage('Tag Docker Image') {
-            steps {
-                echo 'tagged'
-            }
-        }
-
-        stage('Push Docker Image') {
-            steps {
-                echo 'Img Pushed'
-            }
-        }
-
         stage('Run Docker Compose') {
             steps {
                 withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
-                    // sh 'ls -a'  
-                    // sh 'cp $ENV_FILE .env'  
-                    // sh 'ls -a'  
+                    sh 'ls -a'  
+                    sh 'cp $ENV_FILE .'
+                    sh 'ls -a'  
                     sh 'docker compose up -d'
+                    echo 'Up and Running...'
                 }
-            }
-        }
-
-        stage('Image Scanning') {
-            steps {
-                echo 'image scanning...'
-            }
-        }
-
-        stage('Unit Testing') {
-            steps {
-                echo 'unit testing...'
-            }
-        }
-
-        stage('Integration Testing') {
-            steps {
-                echo 'integration testing...'
             }
         }
     }
 }
+
+
+
+
+// #########################################
+// Both correct
+
+
+
+
+// pipeline {
+//     agent any
+
+//     environment {
+//         ENV_FILE_ID = 'my-env-file'
+//     }
+
+//     stages {
+//         stage('Checkout Code') {
+//             steps {
+//                 git url: "https://github.com/faizan35/fullstack-ecommerce.git", branch: "main"
+//                 echo 'code clone done.'
+//             }
+//         }
+
+//         stage('Build Docker Image') {
+//             steps {
+//                 echo 'Docker Building done.'
+//             }
+//         }
+
+//         stage('Tag Docker Image') {
+//             steps {
+//                 echo 'tagged'
+//             }
+//         }
+
+//         stage('Push Docker Image') {
+//             steps {
+//                 echo 'Img Pushed'
+//             }
+//         }
+
+//         stage('Run Docker Compose') {
+//             steps {
+//                 withCredentials([file(credentialsId: 'my-env-file', variable: 'ENV_FILE')]) {
+//                     sh 'ls -a'  
+//                     sh 'cp $ENV_FILE .env'  
+//                     sh 'ls -a'  
+//                     sh 'docker compose up -d'
+//                 }
+//             }
+//         }
+
+//         stage('Image Scanning') {
+//             steps {
+//                 echo 'image scanning...'
+//             }
+//         }
+
+//         stage('Unit Testing') {
+//             steps {
+//                 echo 'unit testing...'
+//             }
+//         }
+
+//         stage('Integration Testing') {
+//             steps {
+//                 echo 'integration testing...'
+//             }
+//         }
+//     }
+// }
