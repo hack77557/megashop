@@ -117,6 +117,7 @@ services:
     volumes:
       - static_data:/app/static
       - media_data:/app/media
+      - /home/megashop/eski_shop/fullstack-ecommerce/core:/app
     depends_on:
       - db
     ports:

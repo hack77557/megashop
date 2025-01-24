@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-o!66*o(mj#%z!d+1ouqf*476jgxk7yy^5c1a3l94*72-!4wo(s
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -281,9 +281,9 @@ REST_FRAMEWORK = {
         "api.permissions.IsAdminOrReadOnly",
     ],
     'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle',
-        'api.throttles.AdminRateThrottle'
+        #'rest_framework.throttling.AnonRateThrottle',
+        #'rest_framework.throttling.UserRateThrottle',
+        #'api.throttles.AdminRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
         'anon': '6/minute',
@@ -307,4 +307,32 @@ DJOSER = {
         "user_create": "api.serializers.CustomUserCreateSerializer",
     },
     'AUTH_HEADER_TYPES': ('JWT',),
+}
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'log' / 'django.log',
+        },
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }

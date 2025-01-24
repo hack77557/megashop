@@ -41,3 +41,23 @@ class ReviewCreateAPIView(generics.CreateAPIView):
             raise ValidationError("You have already reviewed this product.")
             
         serializer.save(created_by=self.request.user, product=product)
+
+
+'''
+Можна протестити на швидкодію
+Якщо користувач надсилає багато запитів із тим самим product_id, це може викликати перевантаження бази даних або додаткові затримки.
+
+Що зробити:
+
+Логіку перевірки можна оптимізувати, зменшивши кількість запитів до бази
+
+    def perform_create(self, serializer):
+        product_id = self.request.data.get('product_id')
+        if not Product.objects.filter(id=product_id).exists():
+            raise ValidationError("Product does not exist.")
+        
+        if Review.objects.filter(product_id=product_id, created_by=self.request.user).exists():
+            raise ValidationError("You have already reviewed this product.")
+
+        serializer.save(created_by=self.request.user, product_id=product_id)
+'''
