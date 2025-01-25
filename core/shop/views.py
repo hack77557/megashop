@@ -57,7 +57,22 @@ def category_list(request: HttpRequest, slug: SlugField):
     products = ProductProxy.objects.select_related('category').filter(category=category)
     context = {"category": category, "products": products}
     return render(request, 'shop/category_list.html', context)
+'''
+def get_all_descendants(category):
+    descendants = []
+    children = category.children.all()
+    for child in children:
+        descendants.append(child)
+        descendants.extend(get_all_descendants(child))
+    return descendants
 
+def category_list(request: HttpRequest, slug: SlugField):
+    category = get_object_or_404(Category, slug=slug)
+    all_categories = [category] + get_all_descendants(category)
+    products = ProductProxy.objects.select_related('category').filter(category__in=all_categories)
+    context = {"category": category, "products": products}
+    return render(request, 'shop/category_list.html', context)
+'''
 
 def search_products(request: HttpRequest):
     query = request.GET.get('q')
@@ -66,3 +81,34 @@ def search_products(request: HttpRequest):
     if not query or not products:
         return redirect('shop:products')
     return render(request, 'shop/products.html', context)
+
+
+
+
+
+
+
+
+
+from rest_framework import generics
+from .models import Category#, Product
+from .serializers import CategorySerializer#, ProductSerializer
+
+# Категорії
+class CategoryListAPIView(generics.ListAPIView):
+    queryset = Category.objects.all().order_by('name')  # Впорядкування за назвою
+    serializer_class = CategorySerializer
+
+class CategoryDetailAPIView(generics.RetrieveAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+'''
+# Продукти
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+class ProductDetailAPIView(generics.RetrieveAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+'''

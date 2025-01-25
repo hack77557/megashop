@@ -61,3 +61,32 @@ class ReviewCreateAPIView(generics.CreateAPIView):
 
         serializer.save(created_by=self.request.user, product_id=product_id)
 '''
+
+
+'''
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from .models import Category
+from .serializers import CategorySerializer
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.filter(parent=None)  # Тільки кореневі категорії
+    serializer_class = CategorySerializer
+
+
+class CategoryDetailView(RetrieveAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+'''
+
+'''
+#########################################
+from rest_framework.generics import ListAPIView
+from shop.models import Category
+from api.serializers import CategorySerializer
+
+class CategoryListView(ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+'''

@@ -114,9 +114,30 @@ class Product(models.Model):
             str: The full image URL.
         """
         return self.image.url if self.image else ''
+################################################################################################################
+class Attribute(models.Model):
+    name = models.CharField("Назва характеристики", max_length=100, unique=True)
 
+    class Meta:
+        verbose_name = "Характеристика"
+        verbose_name_plural = "Характеристики"
+        ordering = ['name']
 
+    def __str__(self):
+        return self.name
 
+class ProductAttribute(models.Model):
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="product_attributes"
+    )
+    attribute = models.ForeignKey(
+        Attribute, on_delete=models.CASCADE, related_name="product_attributes", default=1  # ID існуючої характеристики
+    )
+    value = models.CharField("Значение", max_length=255)
+
+    class Meta:
+        unique_together = ('product', 'attribute')
+################################################################################################################
 class ProductManager(models.Manager):
     """
     A custom manager for the Product model that provides additional functionality.

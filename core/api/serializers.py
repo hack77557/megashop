@@ -18,6 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'title', 'brand', 'image', 'price', 'category', 'created_at', 'updated_at']
+        ref_name = "API_Product"  # Унікальне ім'я для цього серіалізатора
 
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -74,3 +75,21 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
         user.save()
         
         return user
+
+'''
+#####
+from rest_framework import serializers
+from .models import Category, Product
+
+class CategorySerializer(serializers.ModelSerializer):
+    children = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'slug', 'parent', 'children']
+
+    def get_children(self, obj):
+        """Рекурсивно отримує дочірні категорії."""
+        children = obj.children.all()
+        return CategorySerializer(children, many=True).data
+'''

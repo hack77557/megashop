@@ -4,6 +4,10 @@ from drf_yasg.views import get_schema_view
 
 from . import views
 
+######
+#from django.urls import path
+#from .views import CategoryListView, CategoryDetailView
+######
 
 app_name = 'api'
 
@@ -40,4 +44,9 @@ urlpatterns = [
         schema_view.with_ui('redoc', cache_timeout=0), 
         name="schema-redoc"
     ),
+    #path('categories/', CategoryListView.as_view(), name='category-list'),
+    #path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
 ]
+
+
+
