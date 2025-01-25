@@ -50,6 +50,7 @@ class ProductDetailtSerializer(serializers.ModelSerializer):
             "image", "available", "discount", "created_at", 
             "updated_at", "discounted_price", "reviews"
         ]
+        ref_name = "APIProductDetailSerializer"  # Унікальне ім'я
     
     
     def get_discounted_price(self, obj):

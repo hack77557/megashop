@@ -18,7 +18,7 @@ urlpatterns = [
 from django.urls import path
 from .views import ProductListView, product_detail_view, category_list, search_products
 
-from .views import CategoryListAPIView, CategoryDetailAPIView#, ProductListAPIView, ProductDetailAPIView
+from .views import CategoryListAPIView, CategoryDetailAPIView, ProductListAPIView, ProductDetailAPIView
 
 app_name = 'shop'
 
@@ -31,6 +31,6 @@ urlpatterns = [
     # Інші маршрути додатку shop
     path('categories/', CategoryListAPIView.as_view(), name='api-category-list'),
     path('categories/<int:pk>/', CategoryDetailAPIView.as_view(), name='api-category-detail'),
-    #path('api/products/', ProductListAPIView.as_view(), name='api-product-list'),
-    #path('api/products/<int:pk>/', ProductDetailAPIView.as_view(), name='api-product-detail'),
+    path('products/', ProductListAPIView.as_view(), name='api-product-list'),
+    path('products/<int:pk>/', ProductDetailAPIView.as_view(), name='api-product-detail'),
 ]
