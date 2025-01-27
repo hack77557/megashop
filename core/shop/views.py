@@ -89,7 +89,7 @@ def search_products(request: HttpRequest):
 
 
 
-from rest_framework.generics import RetrieveAPIView
+#from rest_framework.generics import RetrieveAPIView
 from rest_framework import generics
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer, ProductDetailtSerializer
@@ -112,7 +112,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 '''
-class ProductDetailAPIView(RetrieveAPIView):
+class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.prefetch_related('product_attributes__attribute')  # Оптимізація запитів
     serializer_class = ProductDetailtSerializer
     lookup_field = "pk"

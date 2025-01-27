@@ -26,7 +26,7 @@ schema_view = get_schema_view(
 
 urlpatterns = [
     # Products
-    path("products/", views.ProductListAPIView.as_view()),
+    #path("products/", views.ProductListAPIView.as_view()),
     path("products/<int:pk>/", views.ProductDetailAPIView.as_view()),
     # Reviews
     path("reviews/create/", views.ReviewCreateAPIView.as_view()),
@@ -44,6 +44,8 @@ urlpatterns = [
         schema_view.with_ui('redoc', cache_timeout=0), 
         name="schema-redoc"
     ),
+    # інші
+    path('shop/', include('shop.urls', namespace='shop')),
     #path('categories/', CategoryListView.as_view(), name='category-list'),
     #path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
 ]

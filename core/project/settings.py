@@ -36,6 +36,18 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 
+# Дозвіл для всіх джерел (НЕБЕЗПЕЧНО у продакшені):
+CORS_ALLOW_ALL_ORIGINS = True
+# Якщо ваш запит вимагає облікових даних (наприклад, cookie або токен), додайте:
+CORS_ALLOW_CREDENTIALS = True
+# Якщо ваші запити використовують кастомні заголовки:
+CORS_ALLOW_HEADERS = [
+    "content-type",
+    "authorization",
+    "Access-Control-Allow-Origin",
+    # Інші заголовки, якщо потрібно
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -68,9 +80,13 @@ INSTALLED_APPS = [
     'payment.apps.PaymentConfig',
     'recommend.apps.RecommendConfig',
     'api.apps.ApiConfig',
+
+    # CORS
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",  # Додайте першим
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

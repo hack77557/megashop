@@ -5,13 +5,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-        ref_name = "Shop_Product"  # Унікальне ім'я для цього серіалізатора
+        ref_name = "ShopCategorySerializer"  # Унікальне ім'я для цього серіалізатора
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
-        ref_name = "Shop_Product"  # Унікальне ім'я для цього серіалізатора
+        ref_name = "ShopProductSerializer"  # Унікальне ім'я для цього серіалізатора
 
 class ProductAttributeSerializer(serializers.ModelSerializer):
     class Meta:
