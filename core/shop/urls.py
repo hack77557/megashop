@@ -30,7 +30,7 @@ urlpatterns = [
     path('<slug:slug>/', product_detail_view, name='product-detail'),
     # Інші маршрути додатку shop
     path('api/categories/', CategoryListAPIView.as_view(), name='api-category-list'),
-    path('categories/<int:pk>/', CategoryDetailAPIView.as_view(), name='api-category-detail'),
+    path('api/categories/<int:pk>/', CategoryDetailAPIView.as_view(), name='api-category-detail'),
     path('api/products/', ProductListAPIView.as_view(), name='api-product-list'),
-    path('products/<int:pk>/', ProductDetailAPIView.as_view(), name='api-product-detail'),
+    path('api/products/<int:pk>/', ProductDetailAPIView.as_view(), name='api-product-detail'),
 ]
