@@ -47,6 +47,7 @@ class ShippingAddress(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    #user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_orders')  # Унікальне ім'я
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, blank=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
     created_at = models.DateField(auto_now_add=True)

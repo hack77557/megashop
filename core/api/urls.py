@@ -45,10 +45,13 @@ urlpatterns = [
         name="schema-redoc"
     ),
     # інші
-    path('shop/', include('shop.urls', namespace='shop')),
+    #path('shop/', include('shop.urls', namespace='shop')),
     #path('categories/', CategoryListView.as_view(), name='category-list'),
     #path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
+
+
 ]
+
 
 
 

@@ -90,3 +90,12 @@ class CategoryListView(ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 '''
+
+
+from rest_framework.permissions import IsAuthenticated
+
+class ProtectedAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response({"message": "This is a protected view!"})

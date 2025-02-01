@@ -94,19 +94,41 @@ from rest_framework import generics
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer, ProductDetailtSerializer
 
+from api.permissions import IsAdminOrReadOnly
+
+
+
+
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from .models import ProductProxy
+
+
+
+
 # Категорії
 class CategoryListAPIView(generics.ListAPIView):
-    queryset = Category.objects.all().order_by('name')  # Впорядкування за назвою
+    #queryset = Category.objects.all().order_by('name')  # Впорядкування за назвою
+    queryset = Category.objects.all().order_by('id')  # Додаємо сортування
     serializer_class = CategorySerializer
+    #permission_classes = [IsAdminOrReadOnly]  # Перевірка прав доступу
 
 class CategoryDetailAPIView(generics.RetrieveAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    #permission_classes = [IsAdminOrReadOnly]  # Перевірка прав доступу
 
 # Продукти
 class ProductListAPIView(generics.ListAPIView):
-    queryset = Product.objects.all()
+    #queryset = Product.objects.all()
+    #queryset = ProductProxy.objects.all()
+    queryset = Product.objects.select_related('category')
     serializer_class = ProductSerializer
+    ####################################################    permission_classes = [IsAuthenticated]  # Перевірка прав доступу №№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№№
+    def get(self, request, *args, **kwargs):
+        print(f"User: {request.user}")  # Логування
+        return super().get(request, *args, **kwargs)
 '''
 class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.all()
@@ -116,3 +138,5 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     queryset = Product.objects.prefetch_related('product_attributes__attribute')  # Оптимізація запитів
     serializer_class = ProductDetailtSerializer
     lookup_field = "pk"
+    #permission_classes = [IsAdminOrReadOnly]  # Перевірка прав доступу
+

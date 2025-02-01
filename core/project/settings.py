@@ -16,6 +16,7 @@ from datetime import timedelta
 import environ
 from django.contrib import messages
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 ENV_DIR = Path(__file__).resolve().parent.parent.parent
 
@@ -83,6 +84,12 @@ INSTALLED_APPS = [
 
     # CORS
     "corsheaders",
+
+    'rest_framework_simplejwt',
+    'eski',
+    'django_cleanup.apps.CleanupConfig',
+    'django_filters',
+
 ]
 
 MIDDLEWARE = [
@@ -95,6 +102,7 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -306,15 +314,24 @@ REST_FRAMEWORK = {
         'user': '20/minute',
         'admin': '40/minute',
     },
+    
     "DEFAULT_PAGINATION_CLASS": "api.pagination.StandardResultsSetPagination",
     "PAGE_SIZE": 15,
+    #'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    #'PAGE_SIZE': 15,  # Ліміт записів на сторінку
 }
 
 
 # Authentication
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    #'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    #'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'UPDATE_LAST_LOGIN': True,
 }
 
 DJOSER = {
@@ -352,3 +369,8 @@ LOGGING = {
         },
     },
 }
+'''
+DJANGO_FILTERS_CONFIG = {
+    'DISABLE_TEMPLATE_RENDERING': True
+}
+'''

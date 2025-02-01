@@ -21,11 +21,16 @@ class Category(models.Model):
     )
     slug = models.SlugField("URL", max_length=250, unique=True, null=False, editable=True)
     created_at = models.DateTimeField("Дата создания", auto_now=True)
+    created_at = models.DateTimeField("Дата створення", auto_now=True)
+    image = models.ImageField(
+        "Зображення", upload_to="images/categories/%Y/%m/%d", blank=True, null=True
+    )  # Додаємо поле зображення
     
     class Meta:
         unique_together = (['slug', 'parent'])
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
+        ordering = ['id']  # 🔹 Додаємо сортування для уникнення UnorderedObjectListWarning
         
     def __str__(self):
         """Returns a string representation of the Category instance/objects."""

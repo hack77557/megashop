@@ -20,7 +20,15 @@ from .views import ProductListView, product_detail_view, category_list, search_p
 
 from .views import CategoryListAPIView, CategoryDetailAPIView, ProductListAPIView, ProductDetailAPIView
 
+
+
 app_name = 'shop'
+
+
+
+
+
+
 
 urlpatterns = [
     #path('', products_view, name='products'),
@@ -33,4 +41,6 @@ urlpatterns = [
     path('api/categories/<int:pk>/', CategoryDetailAPIView.as_view(), name='api-category-detail'),
     path('api/products/', ProductListAPIView.as_view(), name='api-product-list'),
     path('api/products/<int:pk>/', ProductDetailAPIView.as_view(), name='api-product-detail'),
+    #
+    
 ]
