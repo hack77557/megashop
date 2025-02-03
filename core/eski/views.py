@@ -83,6 +83,7 @@ class AuthViewSet(viewsets.ViewSet):
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = None  # Вимикаємо пагінацію для категорій
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
 
@@ -134,3 +135,32 @@ class AttributeViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AttributeSerializer  # Використовуємо правильний серіалізатор
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
+
+
+# користувач
+from django.contrib.auth.models import User
+#from rest_framework.viewsets import ModelViewSet
+from .serializers import UserSerializer
+#from rest_framework.permissions import IsAuthenticated, IsAdminUser
+#from rest_framework.decorators import action
+#from rest_framework.response import Response
+
+class UserViewSet(ModelViewSet):
+    #queryset = User.objects.all()
+    queryset = User.objects.all().order_by("id")  # Сортування за id
+    serializer_class = UserSerializer
+
+    def get_permissions(self):
+        """Адміни можуть бачити всіх, а користувачі - тільки себе"""
+        if self.action == 'list':
+            return [IsAdminUser()]  # Тільки адміни можуть бачити список користувачів
+        return [IsAuthenticated()]  # Інші можуть працювати тільки зі своїм профілем
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        """Повертає дані про поточного користувача"""
+        serializer = self.get_serializer(request.user)
+        return Response(serializer.data)
+    
+
+# користувач новий тест додаткові поля 
