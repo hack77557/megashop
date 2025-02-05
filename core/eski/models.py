@@ -4,6 +4,7 @@
 
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
@@ -26,15 +27,15 @@ class Order(models.Model):
         ('processing', 'Processing'),
         ('delivered', 'Delivered'),
     ]
-    #user = models.ForeignKey(User, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='eski_orders')  # Унікальне ім'я
+    #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='eski_orders')  # Унікальне ім'я
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')
 
     def __str__(self):
         return f"Order {self.id} - {self.status}"
 
 class Discount(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     percentage = models.IntegerField()
 
     def __str__(self):

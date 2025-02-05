@@ -1,12 +1,14 @@
 from django.db import models
-from django.contrib.auth import get_user_model
+#from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.urls import reverse
 from decimal import Decimal
 
 from shop.models import Product
 
-User = get_user_model()
+#User = get_user_model()
+
+from django.conf import settings  # Імпортуємо settings
 
 
 class ShippingAddress(models.Model):
@@ -20,7 +22,7 @@ class ShippingAddress(models.Model):
     city = models.CharField(max_length=100, blank=True, null=True)
     zip_code = models.CharField(max_length=100, blank=True, null=True)
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Shipping Address'
@@ -46,8 +48,8 @@ class ShippingAddress(models.Model):
 
 
 class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
-    #user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='payment_orders')  # Унікальне ім'я
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
+    #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payment_orders')  # Унікальне ім'я
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, blank=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
     created_at = models.DateField(auto_now_add=True)
@@ -97,7 +99,7 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     price = models.DecimalField(max_digits=9, decimal_places=2)
     quantity = models.IntegerField(default=1)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'OrderItem'

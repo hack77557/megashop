@@ -48,3 +48,5 @@ class ProductAdmin(admin.ModelAdmin):
         return {
             'slug': ('title',),
         }
+    
+

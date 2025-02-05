@@ -59,6 +59,11 @@ class ProductDetailtSerializer(serializers.ModelSerializer):
 
 
 class CustomUserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        write_only=True,
+        style={'input_type': 'password'},
+    )
+
     class Meta:
         model = User
         fields = ['email', 'password']
@@ -66,15 +71,17 @@ class CustomUserCreateSerializer(serializers.ModelSerializer):
             'password': {'write_only': True}
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Встановлюємо атрибут swagger_schema для поля password після створення поля
+        self.fields['password'].swagger_schema = {'type': 'string', 'format': 'password'}
+
     def create(self, validated_data):
         email = validated_data['email']
         username = email.split('@')[0]
-        user = User(
-            email=email, username=username,
-        )
+        user = User(email=email, username=username)
         user.set_password(validated_data['password'])
         user.save()
-        
         return user
 
 '''

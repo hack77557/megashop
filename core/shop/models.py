@@ -119,6 +119,8 @@ class Product(models.Model):
             str: The full image URL.
         """
         return self.image.url if self.image else ''
+
+
 ################################################################################################################
 class Attribute(models.Model):
     name = models.CharField("Назва характеристики", max_length=100, unique=True)

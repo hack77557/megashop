@@ -140,3 +140,6 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     lookup_field = "pk"
     #permission_classes = [IsAdminOrReadOnly]  # Перевірка прав доступу
 
+
+
+

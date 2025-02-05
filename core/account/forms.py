@@ -3,31 +3,35 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.forms.widgets import PasswordInput, TextInput
 
-# type hinting
-from typing import Any
-
 User = get_user_model()
-
 
 class UserCreateForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password1', 'password2')
-    
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(UserCreateForm, self).__init__(*args, **kwargs)
+        # Додаємо додаткові поля: зверніть увагу, що ви можете змінити набір полів за потребою
+        fields = (
+            'username',
+            'email',
+            'middle_name',
+            'phone',
+            'date_of_birth',
+            'sex',
+            'language',
+            'password1',
+            'password2'
+        )
 
-        self.fields['email'].label = 'Your Email Adress'
+    def __init__(self, *args, **kwargs):
+        super(UserCreateForm, self).__init__(*args, **kwargs)
+        self.fields['email'].label = 'Your Email Address'
         self.fields['email'].required = True
         self.fields['username'].help_text = ''
         self.fields['password1'].help_text = ''
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower()
-        
         if User.objects.filter(email=email).exclude(id=self.instance.id).exists() or len(email) > 254:
-            raise forms.ValidationError("Email is already exists or too long")
-        
+            raise forms.ValidationError("Email already exists or is too long")
         return email
 
 
@@ -39,21 +43,18 @@ class UserLoginForm(AuthenticationForm):
 class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True)
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super(UserUpdateForm, self).__init__(*args, **kwargs)
-        
-        self.fields['email'].label = 'Your Email Adress'
-        self.fields['email'].required = True
-        
-    def clean_email(self):
-        email = self.cleaned_data['email'].lower()
-        
-        if User.objects.filter(email=email).exclude(id=self.instance.id).exists() or len(email) > 254:
-            raise forms.ValidationError("Email is already in use or too long")
-        
-        return email
-
     class Meta:
         model = User
-        fields = ['username', 'email']
-        exclude = ['password1', 'password2']
+        # Додаємо як базові, так і додаткові поля для редагування профілю.
+        fields = ['username', 'email', 'middle_name', 'phone', 'date_of_birth', 'sex', 'language']
+
+    def __init__(self, *args, **kwargs):
+        super(UserUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['email'].label = 'Your Email Address'
+        self.fields['email'].required = True
+
+    def clean_email(self):
+        email = self.cleaned_data['email'].lower()
+        if User.objects.filter(email=email).exclude(id=self.instance.id).exists() or len(email) > 254:
+            raise forms.ValidationError("Email already in use or is too long")
+        return email

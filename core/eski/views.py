@@ -23,7 +23,6 @@ from .serializers import CategorySerializer, OrderSerializer#, ProductDetailtSer
 #from rest_framework.renderers import JSONRenderer
 
 
-
 # URLs для проксування
 #SHOP_API_BASE_URL = "http://192.168.163.10:8000/shop/api"
 SHOP_API_BASE_URL = os.getenv('SHOP_API_BASE_URL', 'http://localhost:8000/shop/api')
@@ -138,7 +137,8 @@ class AttributeViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 # користувач
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+User = get_user_model()
 #from rest_framework.viewsets import ModelViewSet
 from .serializers import UserSerializer
 #from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -146,7 +146,6 @@ from .serializers import UserSerializer
 #from rest_framework.response import Response
 
 class UserViewSet(ModelViewSet):
-    #queryset = User.objects.all()
     queryset = User.objects.all().order_by("id")  # Сортування за id
     serializer_class = UserSerializer
 
