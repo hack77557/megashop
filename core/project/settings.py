@@ -193,15 +193,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 # Static Files 
+'''
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR /'static'
 STATICFILES_DIRS = [
     BASE_DIR / 'project' / 'static',
 ]
 
-
-MEDIA_URL ='media/'
+MEDIA_URL ='/media/'
 MEDIA_ROOT = BASE_DIR /'media'
+'''
+import os
+STATIC_URL = '/static/'
+#STATIC_ROOT = os.getenv("APP_PATH_STATIC", BASE_DIR / 'static')
+STATIC_ROOT = '/app/static/'  # ✅ Вірний шлях у контейнері
+
+MEDIA_URL = '/media/'
+#MEDIA_ROOT = os.getenv("APP_PATH_MEDIA", BASE_DIR / 'media')
+MEDIA_ROOT = '/app/media/'  # ✅ Шлях до медіа в контейнері
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'project' / 'static',  # Додайте лише якщо у вас є додаткові статичні файли
+]
 
 # Django Message
 MESSAGE_TAGS = {

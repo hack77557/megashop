@@ -2652,3 +2652,45 @@ Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
 Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
 Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
 Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /favicon.ico
+Method Not Allowed: /api/v1/auth/jwt/create/
+Not Found: /favicon.ico
+Not Found: /media/products/products/default.jfif
+Not Found: /media/products/products/default.jfif
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /media/cache/34/b3/34b3cfbe0e1db2cbb03e1ed403798de3.jpg
+Not Found: /api/v1/orders/
+Internal Server Error: /payment/complete-order/
+Traceback (most recent call last):
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/app/payment/views.py", line 137, in complete_order
+    session = stripe.checkout.Session.create(**session_data)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/stripe/checkout/_session.py", line 3727, in create
+    cls._static_request(
+  File "/usr/local/lib/python3.11/site-packages/stripe/_api_resource.py", line 131, in _static_request
+    return _APIRequestor._global_instance().request(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/stripe/_api_requestor.py", line 176, in request
+    resp = requestor._interpret_response(rbody, rcode, rheaders)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/local/lib/python3.11/site-packages/stripe/_api_requestor.py", line 566, in _interpret_response
+    self.handle_error_response(rbody, rcode, resp.data, rheaders)
+  File "/usr/local/lib/python3.11/site-packages/stripe/_api_requestor.py", line 242, in handle_error_response
+    raise err
+stripe._error.AuthenticationError: Invalid API Key provided: sk_test_************cdef
