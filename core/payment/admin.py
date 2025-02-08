@@ -95,7 +95,7 @@ class OrderItemInline(admin.TabularInline):
             return ['price', 'product', 'quantity', 'user']
         return super().get_readonly_fields(request, obj)
 
-
+'''
 class OrderAdmin(admin.ModelAdmin):
     list_display = [
         'id', 'user', 'shipping_address', 
@@ -107,7 +107,25 @@ class OrderAdmin(admin.ModelAdmin):
     list_per_page = 15
     list_display_links = ['id', 'user']
     actions = [export_paid_to_csv, export_not_paid_to_csv]
+'''
 
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ['id', 'user', 'total_price', 'is_paid', 'delivery_method']
+    list_filter = ['is_paid', 'delivery_method']
+    search_fields = ['user__username', 'shipping_address__full_name']
+    ordering = ['-created_at']
+    
+    # Додаємо випадаючий список у формі адміністратора
+    def formfield_for_choice_field(self, db_field, request, **kwargs):
+        if db_field.name == "delivery_method":
+            kwargs["choices"] = [
+                ('nova_poshta', 'Nova Poshta'),
+                ('ukrposhta', 'Ukrposhta'),
+                ('courier', 'Courier'),
+                ('self_pickup', 'Self Pickup'),
+            ]
+        return super().formfield_for_choice_field(db_field, request, **kwargs)
 
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderItem)

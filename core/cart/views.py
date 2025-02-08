@@ -30,7 +30,7 @@ def cart_add(request: HttpRequest):
         response = JsonResponse({'qty': cart_qty, "product": product.title})
         return response
 
-
+'''
 def cart_delete(request: HttpRequest):
     cart = Cart(request)
     
@@ -44,7 +44,28 @@ def cart_delete(request: HttpRequest):
         
         response = JsonResponse({'qty': cart_qty, 'total': cart_total})
         return response
+'''
+def cart_delete(request: HttpRequest):
+    cart = Cart(request)
 
+    if request.POST.get('action') == 'post':
+        product_id = request.POST.get('product_id')
+
+        # ✅ Додаємо перевірку, щоб уникнути ValueError
+        if not product_id or not product_id.isdigit():
+            return JsonResponse({'error': 'Invalid product ID'}, status=400)
+
+        product_id = int(product_id)
+
+        if str(product_id) not in cart.cart:
+            return JsonResponse({'error': 'Product not found in cart'}, status=404)
+
+        cart.delete(product_id)
+
+        cart_qty = cart.__len__()
+        cart_total = cart.get_total_price()
+
+        return JsonResponse({'qty': cart_qty, 'total': cart_total})
 
 def cart_clear(request: HttpRequest):
     cart = Cart(request)

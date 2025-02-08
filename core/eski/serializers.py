@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from shop.models import Category, Product
-from payment.models import Order 
+from payment.models import Order, OrderItem
+
+
+
+
+
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -12,10 +17,29 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+class OrderItemSerializer(serializers.ModelSerializer):
+    product_title = serializers.CharField(source='product.title', read_only=True)
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'product_title', 'price', 'quantity']
+
+
 class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True, read_only=True)
+
     class Meta:
         model = Order
-        fields = '__all__'
+        fields = [
+            'id', 'user', 'shipping_address', 'total_price', 'is_paid',
+            'payment_method', 'delivery_method', 'created_at', 'items'
+        ]
+
+
+class OrderCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = ['shipping_address', 'total_price', 'payment_method', 'delivery_method']
 '''
 #користувач
 from django.contrib.auth.models import User

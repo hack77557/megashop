@@ -23,7 +23,7 @@ from yookassa import Payment, Configuration
 # type hinting
 from django.http import HttpRequest
 
-
+from shop.models import Product
 # Stripe configuration
 stripe.api_key = settings.STRIPE_SECRET_KEY
 stripe.api_version = settings.STRIPE_API_VERSION
@@ -64,7 +64,7 @@ def checkout_view(request: HttpRequest):
         except ShippingAddress.DoesNotExist:
             return redirect('payment:shipping')
     return render(request, 'payment/checkout.html')
-
+'''
 def complete_order(request: HttpRequest):
     if request.method == 'POST':
         payment_type = request.POST.get('stripe-payment', 'yookassa-payment')
@@ -226,6 +226,140 @@ def complete_order(request: HttpRequest):
                 return JsonResponse({'error': 'Unsupported payment type'})
 
     return JsonResponse({'error': 'Invalid request'})
+'''
+
+def complete_order(request: HttpRequest):
+    if request.method == 'POST':
+        # Отримуємо спосіб оплати та доставки
+        payment_type = request.POST.get('payment-method', 'cash-on-delivery')  # ✅ Виправлено
+        delivery_method = request.POST.get('delivery-method', 'nova_poshta')  # ✅ Виправлено
+
+        print(f"🛒 Delivery method from POST request: {delivery_method}")  # 🔥 Дебаг-лог
+        print(f"💳 Payment method from POST request: {payment_type}")  # 🔥 Дебаг-лог
+
+        # Отримуємо дані користувача
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        street_address = request.POST.get('street_address')
+        apartment_address = request.POST.get('apartment_address')
+        country = request.POST.get('country')
+        city = request.POST.get('city')
+        zip_code = request.POST.get('zip_code')
+        
+        # Отримуємо кошик
+        cart = Cart(request)
+        total_price = cart.get_total_price()
+
+        # 📌 Перевіряємо, чи є товари в кошику
+        if not len(cart):
+            return JsonResponse({'error': 'Your cart is empty'}, status=400)
+
+        # 📦 Отримуємо або створюємо адресу доставки
+        shipping_address, _ = ShippingAddress.objects.get_or_create(
+            user=request.user,
+            defaults={
+                'full_name': name,
+                'email': email,
+                'street_address': street_address,
+                'apartment_address': apartment_address,
+                'country': country,
+                'city': city,
+                'zip_code': zip_code,
+            }
+        )
+
+        # 📝 **Створюємо замовлення**
+        order = Order.objects.create(
+            user=request.user,
+            shipping_address=shipping_address,
+            total_price=total_price,
+            is_paid=False,
+            delivery_method=delivery_method,
+            payment_method=payment_type,
+        )
+        
+
+        items = []
+        for item in cart:
+            print(f"✅ Cart item structure: {item}")  # 🔥 Дебаг-лог
+            # Переконаємось, що всі необхідні ключі є в item
+            if 'product' not in item or 'price' not in item or 'qty' not in item:
+                print("❌ ERROR: Missing required keys in cart item:", item)
+                continue  # Пропустити, якщо щось відсутнє
+            # 🔥 Виправлення! Отримуємо об'єкт `Product` з БД
+
+            product_id = item['product']['id']
+            product = get_object_or_404(Product, id=product_id)
+
+
+            OrderItem.objects.create(
+                order=order,
+                product=product,  # Тепер це об'єкт `Product`
+                price=item['price'],
+                quantity=item['qty'],
+                user=request.user if request.user.is_authenticated else None,
+            )
+
+            items.append({
+                'product': product.title,  # ✅ Використовуємо `product` (це тепер об'єкт `Product`)
+                'price': float(item['price']),
+                'quantity': item['qty'],
+            })
+
+        # 🛒 **Очищаємо кошик після покупки**
+        cart.clear()
+
+        # 🏦 Логіка для обраного способу оплати
+        if payment_type == "stripe-payment":
+            session_data = {
+                'mode': 'payment',
+                'success_url': request.build_absolute_uri(reverse('payment:payment-success')),
+                'cancel_url': request.build_absolute_uri(reverse('payment:payment-fail')),
+                'line_items': [
+                    {
+                        'price_data': {
+                            'unit_amount': int(item['price'] * Decimal(100)),
+                            'currency': 'usd',
+                            'product_data': {'name': item['product']},
+                        },
+                        'quantity': item['quantity'],
+                    }
+                    for item in items
+                ],
+                'client_reference_id': order.id,
+            }
+
+            session = stripe.checkout.Session.create(**session_data)
+            return redirect(session.url, code=303)
+
+        elif payment_type == "yookassa-payment":
+            idempotence_key = uuid.uuid4()
+            currency = 'RUB'
+            description = 'Товари в кошику'
+            payment = Payment.create({
+                "amount": {"value": str(total_price * 93), "currency": currency},
+                "confirmation": {
+                    "type": "redirect",
+                    "return_url": request.build_absolute_uri(reverse('payment:payment-success')),
+                },
+                "capture": True,
+                "test": True,
+                "description": description,
+            }, idempotence_key)
+
+            confirmation_url = payment.confirmation.confirmation_url
+            return redirect(confirmation_url)
+
+        # 🏠 **Підтримка оплати готівкою**
+        return JsonResponse({
+            'message': 'Order created successfully',
+            'order_id': order.id,
+            'delivery_method': delivery_method,
+            'payment_method': payment_type,
+            'items': items
+        })
+
+
 
 
 def payment_success(request: HttpRequest):

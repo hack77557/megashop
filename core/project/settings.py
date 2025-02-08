@@ -392,7 +392,7 @@ DJANGO_FILTERS_CONFIG = {
 '''
 
 AUTH_USER_MODEL = 'account.CustomUser'
-
+'''
 SWAGGER_SETTINGS = {
     'DEFAULT_FIELD_INSPECTORS': [
         #'drf_yasg.inspectors.SwaggerAutoSchema',
@@ -403,4 +403,20 @@ SWAGGER_SETTINGS = {
         'drf_yasg.inspectors.SimpleFieldInspector',
         'drf_yasg.inspectors.StringDefaultFieldInspector',
     ],
+}
+'''
+SWAGGER_SETTINGS = {
+    'DEFAULT_FIELD_INSPECTORS': [
+        'api.swagger_inspectors.PasswordFieldInspector',
+        'api.swagger_inspectors.ReadOnlyFieldInspector',
+        'api.swagger_inspectors.PrimaryKeyRelatedFieldInspector',
+        'api.swagger_inspectors.ChoiceFieldInspector',
+        'api.swagger_inspectors.EmailFieldInspector',
+        'api.swagger_inspectors.SerializerMethodFieldInspector',
+        'drf_yasg.inspectors.field.CamelCaseJSONFilter',
+        'drf_yasg.inspectors.base.FieldInspector',
+        'drf_yasg.inspectors.field.FileFieldInspector',
+        'drf_yasg.inspectors.field.SimpleFieldInspector',
+        'drf_yasg.inspectors.field.StringDefaultFieldInspector',
+    ]
 }

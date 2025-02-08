@@ -2,7 +2,6 @@
 
 {% load static %}
 
-
 {% block content %}
 
 <style>
@@ -11,7 +10,6 @@
         background-color: gray;
     }
 </style>
-
 
 <body>
 
@@ -24,87 +22,98 @@
             <hr>
             <br>
 
-            <!--Full name-->
+            <!-- Full name -->
             <div class="form-field">
                 <input 
-                    class="form-control validate" id="name" type="text" 
-                    placeholder="Full name*" autocomplete="off" value="{{shipping_address.full_name}}" required
+                    class="form-control validate" name="name" id="name" type="text" 
+                    placeholder="Full name*" autocomplete="off" value="{{ shipping_address.full_name }}" required
                 >
             </div>
             <br>
 
-            <!--Email-->
+            <!-- Email -->
             <div class="form-field">
                 <input 
-                    class="form-control validate" id="email" type="email" 
-                    placeholder="Email address*" autocomplete="off" value="{{shipping_address.email}}" required
+                    class="form-control validate" name="email" id="email" type="email" 
+                    placeholder="Email address*" autocomplete="off" value="{{ shipping_address.email }}" required
                 >
             </div>
             <br>
 
-            <!--Street Address-->
+            <!-- Street Address -->
             <div class="form-field">
                 <input 
-                    class="form-control validate" id="address1" type="text" 
-                    placeholder="Street address*" autocomplete="off" value="{{shipping_address.street_address}}" required
+                    class="form-control validate" name="street_address" id="address1" type="text" 
+                    placeholder="Street address*" autocomplete="off" value="{{ shipping_address.street_address }}" required
                 >
             </div>
             <br>
 
-            <!--Apartment Address-->
+            <!-- Apartment Address -->
             <div class="form-field">
                 <input 
-                    class="form-control validate" id="address2" type="text" 
-                    placeholder="Apartment address" autocomplete="off" value="{{shipping_address.apartment_address}}" required
+                    class="form-control validate" name="apartment_address" id="address2" type="text" 
+                    placeholder="Apartment address" autocomplete="off" value="{{ shipping_address.apartment_address }}"
                 >
             </div>
             <br>
 
-            <!--Country-->
+            <!-- Country -->
             <div class="form-field">
                 <input 
-                    class="form-control" id="country" type="text" 
-                    placeholder="Country" autocomplete="off" value="{{shipping_address.country}}"
+                    class="form-control" name="country" id="country" type="text" 
+                    placeholder="Country" autocomplete="off" value="{{ shipping_address.country }}"
                 >
             </div>
             <br>
 
-            <!--City-->
+            <!-- City -->
             <div class="form-field">
                 <input 
-                    class="form-control validate" id="city" type="text" 
-                    placeholder="City*" autocomplete="off" value="{{shipping_address.city}}" required
+                    class="form-control validate" name="city" id="city" type="text" 
+                    placeholder="City*" autocomplete="off" value="{{ shipping_address.city }}" required
                 >
             </div> 
             <br>
 
-            <!--Zip code-->
+            <!-- Zip code -->
             <div class="form-field">
                 <input 
-                    class="form-control" id="zipcode" type="text" 
-                    placeholder="Zip code (Optional)" autocomplete="off" value="{{shipping_address.zip_code}}"
+                    class="form-control" name="zip_code" id="zipcode" type="text" 
+                    placeholder="Zip code (Optional)" autocomplete="off" value="{{ shipping_address.zip_code }}"
                 >
             </div>
-        </div>
-        <br>
+            <br>
 
+            <!-- Payment Method -->
+            <div class="form-field">
+                <label for="payment-method">Оберіть метод оплати:</label>
+                <select class="form-control" name="payment-method" id="payment-method">
+                    <option value="stripe-payment">Оплата через Stripe</option>
+                    <option value="yookassa-payment">Оплата через YooKassa</option>
+                    <option value="cash-on-delivery">Оплата готівкою</option>
+                </select>
+            </div>
+            <br>
+
+            <!-- Delivery Method -->
+            <div class="form-field">
+                <label for="delivery-method">Оберіть спосіб доставки:</label>
+                <select class="form-control" name="delivery-method" id="delivery-method">
+                    <option value="nova_poshta">Нова Пошта</option>
+                    <option value="ukrposhta">Укрпошта</option>
+                    <option value="courier">Кур’єр</option>
+                    <option value="self_pickup">Самовивіз</option>  <!-- Виправлено -->
+                </select>
+            </div>
+            <br>
+        </div>
+        
         {% csrf_token %}
 
-        <button 
-            id="complete-order-stripe" type="submit" class="btn btn-primary navbar-btn text-white"
-            name="stripe-payment" value="stripe-payment"
-        >
-            &nbsp; Pay with Stripe
+        <button type="submit" class="btn btn-primary navbar-btn text-white">
+            &nbsp; Оформити замовлення
         </button>
-
-        <button 
-            id="complete-order-yookassa" type="submit" class="btn btn-primary navbar-btn text-white"
-            name="yookassa-payment" value="yookassa-payment"
-        >
-            &nbsp; Pay with Yookassa
-        </button>
-        <br>
-
     </form>
 </div>
 <br>

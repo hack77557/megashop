@@ -1,7 +1,7 @@
 import requests
 import os
 from django.http import JsonResponse
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from django.contrib.auth import authenticate, login, logout
@@ -16,11 +16,12 @@ from rest_framework.viewsets import ModelViewSet
 
 # Імпортуємо моделі з shop та payment
 from shop.models import Category, Product, Attribute
-from payment.models import Order
+from payment.models import Order, OrderItem
 from shop.serializers import ProductSerializer, ProductDetailtSerializer, AttributeSerializer
 
-from .serializers import CategorySerializer, OrderSerializer#, ProductDetailtSerializer
+from .serializers import CategorySerializer, OrderSerializer, OrderCreateSerializer#, ProductDetailtSerializer
 #from rest_framework.renderers import JSONRenderer
+from django.shortcuts import get_object_or_404
 
 
 # URLs для проксування
@@ -115,13 +116,36 @@ class ProductViewSet(ModelViewSet):
         """Вимикаємо HTML рендерери, залишаємо тільки JSON"""
         return [JSONRenderer()]
 '''
+'''
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
+'''
+class OrderViewSet(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    #permission_classes = [permissions.IsAuthenticated]
+    #permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return OrderCreateSerializer
+        return OrderSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(detail=True, methods=['get'])
+    def items(self, request, pk=None):
+        """
+        Отримати всі товари в конкретному замовленні.
+        """
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        items = OrderItem.objects.filter(order=order)
+        serializer = OrderItemSerializer(items, many=True)
+        return Response(serializer.data)
 
 
 '''

@@ -16,6 +16,7 @@ class ProductAttributeSerializer(serializers.ModelSerializer):
         fields = ['attribute', 'value']  # Поля атрибутів (attribute.name і value)
 
     attribute = serializers.CharField(source='attribute.name')  # Виводимо назву атрибуту замість ID
+    
 
 '''v1
 class ProductSerializer(serializers.ModelSerializer):

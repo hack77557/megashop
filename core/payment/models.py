@@ -47,18 +47,33 @@ class ShippingAddress(models.Model):
         return shipping_address
 
 
+
 class Order(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
-    #user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='payment_orders')  # Унікальне ім'я
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, blank=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
     is_paid = models.BooleanField(default=False)
-    discount = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
-    )
-    
+    discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    # Додаємо нові поля
+    #payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='cash')
+    #delivery_method = models.CharField(max_length=20, choices=DELIVERY_METHODS, default='nova_poshta')
+
+        # 🔹 Збільшуємо `max_length` для запобігання помилкам
+    payment_method = models.CharField(max_length=20, choices=[
+        ('stripe-payment', 'Stripe'),
+        ('yookassa-payment', 'Yookassa'),
+        ('cash-on-delivery', 'Cash on Delivery')
+    ], default='cash-on-delivery')
+
+    delivery_method = models.CharField(max_length=20, choices=[
+        ('nova_poshta', 'Nova Poshta'),
+        ('ukrposhta', 'Ukrposhta'),
+        ('courier', 'Courier'),
+        ('self_pickup', 'Self Pickup')
+    ], default='nova_poshta')
+
     class Meta:
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
@@ -72,10 +87,10 @@ class Order(models.Model):
                 name='total_price_gte_0',
             )
         ]
-
     def __str__(self):
-        return f"Order id: {self.id}, \
-            related: (ShippingAddress of User - {self.user.username}) (Status of payment - {self.is_paid})"
+        return f"Order id: {self.id}, related: (User - {self.user.username if self.user else 'Guest'}) (Status - {self.is_paid})"    
+
+
 
     def get_absolute_url(self):
         return reverse("payment:order-detail", kwargs={'pk': self.pk})
