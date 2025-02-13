@@ -10,6 +10,15 @@ from . import views
 #from .views import CategoryListView, CategoryDetailView
 ######
 
+from rest_framework.permissions import AllowAny
+from django.urls import path
+
+from django.urls import path, re_path
+from rest_framework import permissions
+
+
+
+
 app_name = 'api'
 
 schema_view = get_schema_view(
@@ -21,7 +30,10 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email="administrator@ecommerce.django"),
         license=openapi.License(name="MIT License"),
     ),
+    #public=True,
+    #permission_classes=(AllowAny,),
     public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 

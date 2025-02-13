@@ -1,59 +1,49 @@
-from drf_yasg.inspectors import FieldInspector
+# api/swagger_inspectors.py
 from drf_yasg import openapi
-from rest_framework.fields import CharField
-
-class PasswordFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        # Перевіряємо, чи це CharField і в ньому встановлено стиль input_type == 'password'
-        if isinstance(obj, CharField) and obj.style.get('input_type') == 'password':
-            return openapi.Schema(type=openapi.TYPE_STRING, format='password')
-        return result
 from drf_yasg.inspectors import FieldInspector
-from drf_yasg import openapi
-from rest_framework.fields import ReadOnlyField
-
-class ReadOnlyFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        if isinstance(obj, ReadOnlyField):
-            # Наприклад, повертаємо тип string
-            return openapi.Schema(type=openapi.TYPE_STRING)
-        return result
-from drf_yasg.inspectors import FieldInspector
-from drf_yasg import openapi
+from rest_framework import serializers
 from rest_framework.relations import PrimaryKeyRelatedField
 
+class PasswordFieldInspector(FieldInspector):
+    def field_to_swagger_object(self, field, **kwargs):
+        if isinstance(field, serializers.CharField) and field.style.get('input_type') == 'password':
+            return openapi.Schema(type=openapi.TYPE_STRING, format='password')
+        return None
+
+class ReadOnlyFieldInspector(FieldInspector):
+    def field_to_swagger_object(self, field, **kwargs):
+        # Якщо поле read_only, спробуємо "пробити" його за допомогою наступних інспекторів,
+        # а потім позначимо як readOnly.
+        if getattr(field, 'read_only', False):
+            schema = self.probe_field(field, **kwargs)
+            if schema is not None:
+                schema.readOnly = True
+                return schema
+        return None
+
 class PrimaryKeyRelatedFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        if isinstance(obj, PrimaryKeyRelatedField):
-            # Припустимо, що ключ – ціле число
+    def field_to_swagger_object(self, field, **kwargs):
+        if isinstance(field, PrimaryKeyRelatedField):
             return openapi.Schema(type=openapi.TYPE_INTEGER)
-        return result
-from drf_yasg.inspectors import FieldInspector
-from drf_yasg import openapi
-from rest_framework.fields import ChoiceField
+        return None
 
 class ChoiceFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        if isinstance(obj, ChoiceField):
-            # Повертаємо рядок із переліком можливих значень
-            return openapi.Schema(type=openapi.TYPE_STRING, enum=list(obj.choices.keys()))
-        return result
-from drf_yasg.inspectors import FieldInspector
-from drf_yasg import openapi
-from rest_framework.fields import EmailField
+    def field_to_swagger_object(self, field, **kwargs):
+        if hasattr(field, 'choices') and field.choices:
+            enum = list(field.choices.keys())
+            field_type = openapi.TYPE_INTEGER if isinstance(enum[0], int) else openapi.TYPE_STRING
+            return openapi.Schema(type=field_type, enum=enum)
+        return None
 
 class EmailFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        if isinstance(obj, EmailField):
+    def field_to_swagger_object(self, field, **kwargs):
+        if isinstance(field, serializers.EmailField):
             return openapi.Schema(type=openapi.TYPE_STRING, format='email')
-        return result
-from drf_yasg.inspectors import FieldInspector
-from drf_yasg import openapi
-from rest_framework.serializers import SerializerMethodField
+        return None
 
 class SerializerMethodFieldInspector(FieldInspector):
-    def process_result(self, result, method_name, obj, **kwargs):
-        if isinstance(obj, SerializerMethodField):
-            # Можна задокументувати як string або тип, який підходить для вашої логіки
+    def field_to_swagger_object(self, field, **kwargs):
+        if isinstance(field, serializers.SerializerMethodField):
+            # За замовчуванням повертаємо string. При необхідності можете розширити логіку.
             return openapi.Schema(type=openapi.TYPE_STRING)
-        return result
+        return None

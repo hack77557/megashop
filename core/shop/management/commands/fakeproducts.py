@@ -55,7 +55,7 @@ class Command(BaseCommand):
             category = Category.objects.create(name="Default Category")
         
         # Create 30 fake products
-        for _ in range(300):
+        for _ in range(1000000):
             product_title = fake.company()
             product_brand = fake.company()
             product_description = fake.paragraph(nb_sentences=2)

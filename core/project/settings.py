@@ -335,6 +335,8 @@ REST_FRAMEWORK = {
     # сортування для всього
     #'ORDERING_PARAM': 'ordering',
     #'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
+    #'DEFAULT_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',  # <--- ДОДАНО
 }
 
 
@@ -354,10 +356,10 @@ DJOSER = {
     "LOGIN_FIELD": "email",
     "SERIALIZERS": {
         "user_create": "api.serializers.CustomUserCreateSerializer",
+        "user": "api.serializers.DjoserCustomUserSerializer",  # Додаємо сюди кастомний user
     },
     'AUTH_HEADER_TYPES': ('JWT',),
 }
-
 
 
 LOGGING = {
@@ -406,17 +408,41 @@ SWAGGER_SETTINGS = {
 }
 '''
 SWAGGER_SETTINGS = {
-    'DEFAULT_FIELD_INSPECTORS': [
-        'api.swagger_inspectors.PasswordFieldInspector',
-        'api.swagger_inspectors.ReadOnlyFieldInspector',
-        'api.swagger_inspectors.PrimaryKeyRelatedFieldInspector',
-        'api.swagger_inspectors.ChoiceFieldInspector',
-        'api.swagger_inspectors.EmailFieldInspector',
-        'api.swagger_inspectors.SerializerMethodFieldInspector',
-        'drf_yasg.inspectors.field.CamelCaseJSONFilter',
-        'drf_yasg.inspectors.base.FieldInspector',
-        'drf_yasg.inspectors.field.FileFieldInspector',
-        'drf_yasg.inspectors.field.SimpleFieldInspector',
-        'drf_yasg.inspectors.field.StringDefaultFieldInspector',
-    ]
+    #'DEFAULT_AUTO_SCHEMA_CLASS': 'api.schema.CustomAutoSchema',
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',
 }
+
+
+# Налаштування сесій через HttpOnly
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Використовуємо БД для збереження сесій
+SESSION_COOKIE_HTTPONLY = False  # Захист від доступу JavaScript                                     # Вимикає HttpOnly для сесійних cookies     True
+SESSION_COOKIE_SECURE = False  # Увімкнути лише у HTTPS (для локального сервера False)
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Закривається разом із браузером
+
+
+# Налаштування CORS
+CORS_ALLOW_CREDENTIALS = True
+'''
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Для React/Vue
+    "http://127.0.0.1:3000",
+]
+'''
+#CORS_ALLOWED_ORIGINS = ['*']
+
+CSRF_COOKIE_HTTPONLY = False                                    # Вимикає HttpOnly     True
+#CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
+#CSRF_TRUSTED_ORIGINS = ['*']
+
+
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://192.168.163.10:5173",   # 🔹 Додай схему HTTP
+    "http://127.0.0.1:3000",   # 🔹 Локальний хост
+    "https://yourdomain.com"   # 🔹 Додай production-домен (якщо є)
+]
+CORS_ALLOWED_ORIGINS = [
+    "http://192.168.163.10:5173",  # ✅ Додай правильний формат
+    "http://127.0.0.1:3000",
+    "https://yourdomain.com"
+]

@@ -81,3 +81,5 @@ class UserSerializer(serializers.ModelSerializer):
             'language',
             # Якщо вам не потрібні groups та user_permissions — не включайте їх
         )
+        ref_name = 'CustomUser'
+        

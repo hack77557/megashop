@@ -101,3 +101,9 @@ class CategorySerializer(serializers.ModelSerializer):
         children = obj.children.all()
         return CategorySerializer(children, many=True).data
 '''
+
+from djoser.serializers import UserSerializer
+
+class DjoserCustomUserSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        ref_name = "DjoserUser"  # Це унікальне ім'я, щоб не було конфлікту у Swagger

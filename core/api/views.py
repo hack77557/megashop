@@ -27,7 +27,7 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ProductDetailtSerializer
     lookup_field = "pk"
 
-
+'''
 class ReviewCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = ReviewSerializer
@@ -41,6 +41,42 @@ class ReviewCreateAPIView(generics.CreateAPIView):
             raise ValidationError("You have already reviewed this product.")
             
         serializer.save(created_by=self.request.user, product=product)
+'''
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
+
+class ReviewCreateAPIView(generics.CreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ReviewSerializer
+
+    @swagger_auto_schema(
+        operation_description="Додати відгук до продукту",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'product_id': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="ID продукту"
+                ),
+                'text': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Текст відгуку"
+                ),
+                'rating': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description="Оцінка (1-5)"
+                )
+            },
+            required=['product_id', 'text', 'rating']
+        ),
+        responses={201: ReviewSerializer()}
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+
+
+
+
 
 
 '''
