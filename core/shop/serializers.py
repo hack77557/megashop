@@ -34,7 +34,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'title', 'brand', 'slug', 'price', 'image', 'available', 'category', 'attributes'
+            #'id', 'title', 'brand', 'slug', 'price', 'image', 'available', 'category', 'attributes'
+            'id', 'title', 'brand', 'description', 'slug', 'price', 'purchase_price', 'image', 'available', 'discount', 'category', 'attributes'
         ]
         ref_name = "ShopProductSerializer"
 
@@ -63,7 +64,7 @@ class ProductDetailtSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            'id', 'title', 'brand', 'description', 'slug', 'price', 'image', 'available',
+            'id', 'title', 'brand', 'description', 'slug', 'price', 'purchase_price', 'image', 'available',
             'created_at', 'updated_at', 'discount', 'category', 'attributes'
         ]
         ref_name = "ShopProductDetailSerializer"  # Унікальне ім'я

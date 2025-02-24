@@ -56,8 +56,19 @@ from django.contrib.auth import get_user_model
 #from rest_framework import serializers
 
 User = get_user_model()
+######## для можливості відправки порожнього значення   "date_of_birth": "",
+class CustomDateField(serializers.DateField):
+    def to_internal_value(self, data):
+        if data == '':
+            return None
+        return super().to_internal_value(data)
+
 
 class UserSerializer(serializers.ModelSerializer):
+
+    # Перевизначення поля, щоб зробити його необов’язковим
+    date_of_birth = CustomDateField(required=False, allow_null=True)
+
     class Meta:
         model = User
         # Явно перелічуємо поля, які ми хочемо включити
@@ -82,4 +93,5 @@ class UserSerializer(serializers.ModelSerializer):
             # Якщо вам не потрібні groups та user_permissions — не включайте їх
         )
         ref_name = 'CustomUser'
-        
+
+

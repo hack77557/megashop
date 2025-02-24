@@ -5084,3 +5084,225 @@ Traceback (most recent call last):
   File "/usr/local/lib/python3.11/site-packages/rest_framework/serializers.py", line 1340, in build_unknown_field
     raise ImproperlyConfigured(
 django.core.exceptions.ImproperlyConfigured: Field name `name` is not valid for model `ProductProxy`.
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Not Found: /favicon.ico
+Method Not Allowed: /eski/attributes/3/
+Method Not Allowed: /eski/attributes/3/
+Not Found: /favicon.ico
+Method Not Allowed: /eski/attributes/3/
+Method Not Allowed: /eski/attributes/3/
+Unauthorized: /cart/api/
+Not Found: /favicon.ico
+Bad Request: /eski/attributes/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Unauthorized: /eski/users/
+Unauthorized: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Bad Request: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Bad Request: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Bad Request: /eski/users/
+Not Found: /favicon.ico
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Not Found: /cart/api/item/{product_id}/remove/
+Unauthorized: /cart/api/item/3/remove/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Not Found: /cart/api/add/
+Not Found: /cart/api/add/
+Not Found: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /eski/users/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Bad Request: /eski/users/
+Bad Request: /eski/users/
+Bad Request: /eski/products/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Method Not Allowed: /cart/api/item/5/update/
+Method Not Allowed: /cart/api/item/5/update/
+Method Not Allowed: /cart/api/item/5/update/
+Method Not Allowed: /cart/api/item/5/update/
+Method Not Allowed: /cart/api/item/5/update/
+Method Not Allowed: /cart/api/item/8/update/
+Method Not Allowed: /cart/api/item/8/update/
+Method Not Allowed: /cart/api/item/8/update/
+Method Not Allowed: /cart/api/clear/
+Method Not Allowed: /cart/api/clear/
+Unauthorized: /cart/api/clear/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Method Not Allowed: /cart/api/item/1/update/
+Unauthorized: /cart/api/clear/
+Not Found: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Not Found: /favicon.ico
+Unauthorized: /api/v1/auth/jwt/create/
+Unauthorized: /api/v1/auth/jwt/create/
+Not Found: /cart/api/add/
+Not Found: /favicon.ico
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/add/
+Not Found: /eski/products/2225/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/
+Unauthorized: /cart/api/

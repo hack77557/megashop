@@ -6,6 +6,8 @@ from . import views
 
 from django_email_verification import urls as email_urls
 
+
+
 #from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
@@ -19,6 +21,7 @@ urlpatterns = [
     path('api/v1/', include('api.urls', namespace='api')),
 
     path('eski/', include('eski.urls')),
+
     #path('api-auth/', include('rest_framework.urls')),  # <-- Ось тут API Admin
     #path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     #path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),

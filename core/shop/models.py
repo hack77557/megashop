@@ -81,6 +81,9 @@ class Product(models.Model):
     description = models.TextField("Описание", blank=True)
     slug = models.SlugField("URL", max_length=250)
     price = models.DecimalField("Цена", max_digits=7, decimal_places=2, default=99.99)
+    purchase_price = models.DecimalField(  # 🔥 Додаємо поле закупівельної ціни
+        "Закупівельна ціна", max_digits=7, decimal_places=2, default=0.00
+    )
     image = models.ImageField(
         "Изображение", upload_to="images/products/%Y/%m/%d", default='products/products/default.jfif'
     )

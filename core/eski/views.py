@@ -153,7 +153,8 @@ class AttributeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = ProductAttributeSerializer
 '''
-class AttributeViewSet(viewsets.ReadOnlyModelViewSet):
+#class AttributeViewSet(viewsets.ReadOnlyModelViewSet):
+class AttributeViewSet(viewsets.ModelViewSet):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer  # Використовуємо правильний серіалізатор
     #permission_classes = [IsAuthenticated]
