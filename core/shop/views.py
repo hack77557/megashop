@@ -85,13 +85,9 @@ def search_products(request: HttpRequest):
 
 
 
-
-
-
-
 #from rest_framework.generics import RetrieveAPIView
 from rest_framework import generics
-from .models import Category, Product
+from .models import Category, Product, ProductImage
 from .serializers import CategorySerializer, ProductSerializer, ProductDetailtSerializer
 
 from api.permissions import IsAdminOrReadOnly
@@ -135,11 +131,27 @@ class ProductDetailAPIView(generics.RetrieveAPIView):
     serializer_class = ProductSerializer
 '''
 class ProductDetailAPIView(generics.RetrieveAPIView):
-    queryset = Product.objects.prefetch_related('product_attributes__attribute')  # Оптимізація запитів
+    queryset = Product.objects.prefetch_related('product_attributes__attribute', 'images')  # Оптимізація запитів
     serializer_class = ProductDetailtSerializer
     lookup_field = "pk"
     #permission_classes = [IsAdminOrReadOnly]  # Перевірка прав доступу
 
 
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
+class ProductImageUploadView(APIView):
+    parser_classes = (MultiPartParser, FormParser)
 
+    def post(self, request, *args, **kwargs):
+        product_id = request.data.get('product')  # Отримуємо ID продукту
+        product = get_object_or_404(Product, id=product_id)
+
+        images = request.FILES.getlist('images')  # Отримуємо список завантажених файлів
+
+        for image in images:
+            ProductImage.objects.create(product=product, image=image)
+
+        return Response({"message": "Images uploaded successfully"}, status=status.HTTP_201_CREATED)

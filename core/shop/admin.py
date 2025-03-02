@@ -10,7 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
     """
     Category Model Admin
     """
-    list_display = ('name', 'parent', 'slug')
+    list_display = ('name', 'parent', 'slug', 'description')
     ordering = ('name',)
     
     def  get_prepopulated_fields(self, request: HttpRequest, obj=None) -> dict:
@@ -38,7 +38,7 @@ class ProductAdmin(admin.ModelAdmin):
     """
     Product Model Admin
     """
-    list_display = ('title', 'brand', 'price', 'discount', 'available', 'created_at', 'updated_at')
+    list_display = ('title', 'brand', 'price', 'discount', 'available', 'created_at', 'updated_at', 'product_code')
     list_filter = ('available', 'created_at', 'updated_at')
     ordering = ('title',)
     inlines = [ProductAttributeInline]  # Додаємо характеристики до сторінки товару ##################################################################################

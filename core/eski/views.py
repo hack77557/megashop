@@ -23,6 +23,10 @@ from .serializers import CategorySerializer, OrderSerializer, OrderCreateSeriali
 #from rest_framework.renderers import JSONRenderer
 from django.shortcuts import get_object_or_404
 
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
+
 
 # URLs для проксування
 #SHOP_API_BASE_URL = "http://192.168.163.10:8000/shop/api"
@@ -97,19 +101,29 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductDetailtSerializer  # Використовуйте оригінальну назву
         return ProductSerializer
 '''
+
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.prefetch_related('product_attributes__attribute')  # Додаємо prefetch_related
+    queryset = Product.objects.prefetch_related('product_attributes__attribute', 'images')  # Додаємо prefetch_related
     #permission_classes = [IsAuthenticated]
     permission_classes = [AllowAny]
+    parser_classes = (MultiPartParser, FormParser, JSONParser)  # 🔥 Додаємо підтримку завантаження файлів
     def get_serializer_class(self):
         if self.action == 'retrieve':
             return ProductDetailtSerializer  # Використовуйте оригінальну назву
         return ProductSerializer
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['category']  # Додаємо можливість фільтрації за категорією
+    filterset_fields = ['category', 'product_code']  # Додаємо можливість фільтрації за категорією
     search_fields = ['title', 'brand']  # Можливість пошуку за назвою та брендом
     ordering_fields = ['price', 'created_at']  # Сортування за ціною або датою створення
+
+    @swagger_auto_schema(request_body=ProductSerializer)
+
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+
+
 '''
     # ВИМКНЕННЯ РЕНДЕРИНГУ HTML-ФОРМ
     def get_renderers(self):
@@ -188,3 +202,34 @@ class UserViewSet(ModelViewSet):
     
 
 # користувач новий тест додаткові поля 
+
+
+
+
+from rest_framework import viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.response import Response
+from rest_framework import status
+'''
+from shop.models import ProductImage
+from shop.serializers import ProductImageSerializer
+
+
+class ProductImageViewSet(viewsets.ModelViewSet):
+    """
+    API для завантаження, перегляду та видалення зображень продукту.
+    """
+    queryset = ProductImage.objects.all()
+    serializer_class = ProductImageSerializer
+    parser_classes = (MultiPartParser, FormParser)  # Додає підтримку завантаження файлів
+
+    def create(self, request, *args, **kwargs):
+        """
+        Завантаження нового зображення для продукту.
+        """
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''

@@ -9,6 +9,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 # type hinting imports
 from django.db.models.query import QuerySet
 
+import os
+from django.core.files.storage import default_storage
+from django.conf import settings
+
 
 
 class Category(models.Model):
@@ -22,6 +26,7 @@ class Category(models.Model):
     slug = models.SlugField("URL", max_length=250, unique=True, null=False, editable=True)
     created_at = models.DateTimeField("Дата создания", auto_now=True)
     created_at = models.DateTimeField("Дата створення", auto_now=True)
+    description = models.TextField("Опис категорії", blank=True, null=True)  # 🔥 Додаємо поле опису
     image = models.ImageField(
         "Зображення", upload_to="images/categories/%Y/%m/%d", blank=True, null=True
     )  # Додаємо поле зображення
@@ -67,6 +72,16 @@ class Category(models.Model):
 
     def get_absolute_url(self):
         return reverse("shop:category-list", args=[str(self.slug)])
+    
+    def delete(self, *args, **kwargs):
+        """
+        Видаляє фото категорії зі сховища перед видаленням запису з бази.
+        """
+        if self.image:
+            image_path = os.path.join(settings.MEDIA_ROOT, str(self.image))
+            if os.path.isfile(image_path):
+                os.remove(image_path)  # 🔥 Видаляємо файл із диска
+        super().delete(*args, **kwargs)  # Видаляємо об'єкт із БД
 
 
 class Product(models.Model):
@@ -80,12 +95,13 @@ class Product(models.Model):
     brand = models.CharField("Бренд", max_length=50)
     description = models.TextField("Описание", blank=True)
     slug = models.SlugField("URL", max_length=250)
-    price = models.DecimalField("Цена", max_digits=7, decimal_places=2, default=99.99)
+    price = models.DecimalField("Цена", max_digits=8, decimal_places=2, default=99.99)
     purchase_price = models.DecimalField(  # 🔥 Додаємо поле закупівельної ціни
-        "Закупівельна ціна", max_digits=7, decimal_places=2, default=0.00
+        "Закупівельна ціна", max_digits=8, decimal_places=2, default=0.00
     )
+    
     image = models.ImageField(
-        "Изображение", upload_to="images/products/%Y/%m/%d", default='products/products/default.jfif'
+        "Головне зображення", upload_to="images/products/%Y/%m/%d", default='products/products/default.jfif'
     )
     available = models.BooleanField("Наличие", default=True)
     created_at = models.DateTimeField("Дата создания", auto_now_add=True, db_index=True)
@@ -93,6 +109,7 @@ class Product(models.Model):
     discount = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
+    product_code = models.CharField("Код товару", max_length=50, unique=True, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Продукт'
@@ -122,6 +139,13 @@ class Product(models.Model):
             str: The full image URL.
         """
         return self.image.url if self.image else ''
+    
+    def delete(self, *args, **kwargs):
+        """Видаляє головне зображення при видаленні продукту"""
+        if self.image and self.image.name != 'products/products/default.jfif':
+            if default_storage.exists(self.image.name):
+                default_storage.delete(self.image.name)
+        super().delete(*args, **kwargs)
 
 
 ################################################################################################################
@@ -148,13 +172,17 @@ class ProductAttribute(models.Model):
     class Meta:
         unique_together = ('product', 'attribute')
 ################################################################################################################
+
 class ProductManager(models.Manager):
     """
     A custom manager for the Product model that provides additional functionality.
     """
     def get_queryset(self) -> QuerySet:
         """Returns a QuerySet of all Product objects that are available."""
-        return super(ProductManager, self).get_queryset().filter(available=True)
+        #return super(ProductManager, self).get_queryset().filter(available=True)
+        return super().get_queryset()
+
+    
 
 
 class ProductProxy(Product):
@@ -168,3 +196,29 @@ class ProductProxy(Product):
     
     class Meta:
         proxy = True
+
+
+class ProductImage(models.Model):
+    """
+    Модель для додаткових зображень продукту.
+    """
+    product = models.ForeignKey(
+        Product, on_delete=models.CASCADE, related_name="images"
+    )
+    image = models.ImageField(
+        "Додаткове зображення", upload_to="images/products/multiple/%Y/%m/%d"
+    )
+
+    class Meta:
+        verbose_name = "Зображення продукту"
+        verbose_name_plural = "Зображення продуктів"
+
+    def delete(self, *args, **kwargs):
+        """Видаляє файл із сховища при видаленні об'єкта"""
+        if self.image:
+            if default_storage.exists(self.image.name):
+                default_storage.delete(self.image.name)
+        super().delete(*args, **kwargs)
+
+    def __str__(self):
+        return f"Зображення для {self.product.title}"
