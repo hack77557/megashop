@@ -101,7 +101,6 @@ class ProductViewSet(viewsets.ModelViewSet):
             return ProductDetailtSerializer  # Використовуйте оригінальну назву
         return ProductSerializer
 '''
-
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.prefetch_related('product_attributes__attribute', 'images')  # Додаємо prefetch_related
     #permission_classes = [IsAuthenticated]

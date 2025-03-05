@@ -5,9 +5,7 @@ from django.urls import reverse
 from decimal import Decimal
 
 from shop.models import Product
-
 #User = get_user_model()
-
 from django.conf import settings  # Імпортуємо settings
 
 
@@ -108,12 +106,13 @@ class Order(models.Model):
         total_cost = self.get_total_cost_before_discount()
         return total_cost - self.get_discount
 
-
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
     price = models.DecimalField(max_digits=9, decimal_places=2)
     quantity = models.IntegerField(default=1)
+    title = models.CharField(max_length=255, blank=True)  # Назва товару
+    discount = models.IntegerField(default=0)  # Знижка на момент замовлення
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
@@ -128,8 +127,16 @@ class OrderItem(models.Model):
         ]
 
     def __str__(self):
-        return f"OrderItem id: {self.id}, \
-            related: (Order id - {self.order.id}, Product title - {self.product.title})"
+        order_id = self.order.id if self.order else "No Order"
+        product_title = self.product.title if self.product else "Unknown Product"
+        return f"OrderItem id: {self.id}, related: (Order id - {order_id}, Product title - {product_title})"
+
+    def save(self, *args, **kwargs):
+        if not self.title and self.product:  # Фіксуємо назву при створенні
+            self.title = self.product.title
+        if not self.discount and self.product:  # Фіксуємо знижку
+            self.discount = self.product.discount
+        super().save(*args, **kwargs)
 
     def get_cost(self):
         return self.price * self.quantity
@@ -140,9 +147,9 @@ class OrderItem(models.Model):
     
     @classmethod
     def get_totat_quantity_for_product(cls, product):
-        return cls.objects.filter(product=product).aggregate(total_quantity=models.Sum('quantity'))['total_quantity'] \
-            or 0
+        return cls.objects.filter(product=product).aggregate(total_quantity=models.Sum('quantity'))['total_quantity'] or 0
     
     @staticmethod
     def get_average_price():
         return OrderItem.objects.aggregate(average_price=models.Avg('price'))['average_price']
+    
