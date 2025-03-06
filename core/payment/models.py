@@ -8,18 +8,14 @@ from shop.models import Product
 #User = get_user_model()
 from django.conf import settings  # Імпортуємо settings
 
-
 class ShippingAddress(models.Model):
     full_name = models.CharField(max_length=255)
     email = models.EmailField(max_length=254)
-
     street_address = models.CharField(max_length=100)
     apartment_address = models.CharField(max_length=100)
-
     country = models.CharField(max_length=100, blank=True, null=True)
     city = models.CharField(max_length=100, blank=True, null=True)
     zip_code = models.CharField(max_length=100, blank=True, null=True)
-
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
@@ -28,12 +24,11 @@ class ShippingAddress(models.Model):
         ordering = ['-id']
     
     def __str__(self):
-        return f"ShippingAddress obj id: {self.id}, \
-            related: (User name - {self.user.username})"
+        return f"ShippingAddress obj id: {self.id}, related: (User name - {self.user.username})"
 
     def get_absolute_url(self):
         return f"/payments/shipping-address"
-    
+
     @classmethod
     def create_default_shipping_address(cls, user):
         default_shipping_address = {
@@ -44,27 +39,27 @@ class ShippingAddress(models.Model):
         shipping_address.save()
         return shipping_address
 
-
-
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('new', 'New'),
+        ('processing', 'Processing'),
+        ('delivered', 'Delivered'),
+        ('cancelled', 'Cancelled'),
+    ]
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, blank=True, null=True)
     shipping_address = models.ForeignKey(ShippingAddress, on_delete=models.CASCADE, blank=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)  # Змінено на DateTimeField для точності
+    updated_at = models.DateTimeField(auto_now=True)      # Змінено на DateTimeField
     is_paid = models.BooleanField(default=False)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new')  # Додаємо статус
     discount = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
-    # Додаємо нові поля
-    #payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default='cash')
-    #delivery_method = models.CharField(max_length=20, choices=DELIVERY_METHODS, default='nova_poshta')
-
-        # 🔹 Збільшуємо `max_length` для запобігання помилкам
     payment_method = models.CharField(max_length=20, choices=[
         ('stripe-payment', 'Stripe'),
         ('yookassa-payment', 'Yookassa'),
         ('cash-on-delivery', 'Cash on Delivery')
     ], default='cash-on-delivery')
-
     delivery_method = models.CharField(max_length=20, choices=[
         ('nova_poshta', 'Nova Poshta'),
         ('ukrposhta', 'Ukrposhta'),
@@ -76,19 +71,13 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
         ordering = ['-created_at']
-        indexes = [
-            models.Index(fields=['-created_at']),
-        ]
+        indexes = [models.Index(fields=['-created_at'])]
         constraints = [
-            models.CheckConstraint(
-                check=models.Q(total_price__gte=0),
-                name='total_price_gte_0',
-            )
+            models.CheckConstraint(check=models.Q(total_price__gte=0), name='total_price_gte_0'),
         ]
+
     def __str__(self):
-        return f"Order id: {self.id}, related: (User - {self.user.username if self.user else 'Guest'}) (Status - {self.is_paid})"    
-
-
+        return f"Order id: {self.id}, related: (User - {self.user.username if self.user else 'Guest'}) (Status - {self.is_paid})"
 
     def get_absolute_url(self):
         return reverse("payment:order-detail", kwargs={'pk': self.pk})
@@ -109,10 +98,13 @@ class Order(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, blank=True, null=True, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE, blank=True, null=True)
-    price = models.DecimalField(max_digits=9, decimal_places=2)
+    price = models.DecimalField(max_digits=9, decimal_places=2)  # Додаємо поле price
     quantity = models.IntegerField(default=1)
-    title = models.CharField(max_length=255, blank=True)  # Назва товару
-    discount = models.IntegerField(default=0)  # Знижка на момент замовлення
+    title = models.CharField(max_length=255, blank=True)
+    discount = models.IntegerField(default=0)
+    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)  # Залишаємо, якщо потрібне
+    price_snapshot = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)  # Залишаємо, якщо потрібне
+    discount_snapshot = models.IntegerField(default=0, null=True, blank=True)  # Залишаємо, якщо потрібне
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta:
@@ -120,10 +112,7 @@ class OrderItem(models.Model):
         verbose_name_plural = 'OrderItems'
         ordering = ['-id']
         constraints = [
-            models.CheckConstraint(
-                check=models.Q(quantity__gte=0),
-                name='quantity_gte_0',
-            ),
+            models.CheckConstraint(check=models.Q(quantity__gte=0), name='quantity_gte_0'),
         ]
 
     def __str__(self):
@@ -132,15 +121,15 @@ class OrderItem(models.Model):
         return f"OrderItem id: {self.id}, related: (Order id - {order_id}, Product title - {product_title})"
 
     def save(self, *args, **kwargs):
-        if not self.title and self.product:  # Фіксуємо назву при створенні
+        if not self.title and self.product:
             self.title = self.product.title
-        if not self.discount and self.product:  # Фіксуємо знижку
+        if not self.discount and self.product:
             self.discount = self.product.discount
         super().save(*args, **kwargs)
 
     def get_cost(self):
         return self.price * self.quantity
-    
+
     @property
     def total_cost(self):
         return self.price * self.quantity
@@ -152,4 +141,3 @@ class OrderItem(models.Model):
     @staticmethod
     def get_average_price():
         return OrderItem.objects.aggregate(average_price=models.Avg('price'))['average_price']
-    

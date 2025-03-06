@@ -18,8 +18,12 @@ from rest_framework.viewsets import ModelViewSet
 from shop.models import Category, Product, Attribute
 from payment.models import Order, OrderItem
 from shop.serializers import ProductSerializer, ProductDetailtSerializer, AttributeSerializer
+###
+#from .serializers import CategorySerializer, OrderSerializer, OrderCreateSerializer#, ProductDetailtSerializer
+from payment.serializers import OrderSerializer, OrderCreateSerializer
+from .serializers import CategorySerializer, UserSerializer
+###
 
-from .serializers import CategorySerializer, OrderSerializer, OrderCreateSerializer#, ProductDetailtSerializer
 #from rest_framework.renderers import JSONRenderer
 from django.shortcuts import get_object_or_404
 
