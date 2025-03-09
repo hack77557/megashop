@@ -9,14 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'slug', 'description', 'created_at', 'parent', 'image']  # Додаємо `image`
         ref_name = "ShopCategorySerializer"
 
-'''
-class ProductAttributeSerializer(serializers.ModelSerializer):
-    #attribute = serializers.CharField(source='attribute.name')  # Виводимо назву атрибуту замість ID ################################################################################
-    attribute = serializers.CharField()  # Дозволяє передавати рядок замість ID
-    class Meta:
-        model = ProductAttribute
-        fields = ['attribute', 'value']  # Поля атрибутів (attribute.name і value)
-'''
+
 class ProductAttributeSerializer(serializers.ModelSerializer):
     attribute = serializers.CharField(source='attribute.name')
 
@@ -33,18 +26,6 @@ class ProductAttributeSerializer(serializers.ModelSerializer):
             return super().to_internal_value({k: v for d in data for k, v in d.items()})
         return super().to_internal_value(data)
    
-    
-
-'''v1
-class ProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        #fields = '__all__'
-        fields = [
-            'id', 'title', 'brand', 'slug', 'price', 'image', 'available', 'category'
-        ]
-        ref_name = "ShopProductSerializer"  # Унікальне ім'я для цього серіалізатора
-'''
 
 class ProductImageSerializer(serializers.ModelSerializer):
     class Meta:
@@ -63,10 +44,8 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            #'id', 'title', 'brand', 'slug', 'price', 'image', 'available', 'category', 'attributes'
-            #'id', 'title', 'brand', 'description', 'slug', 'price', 'purchase_price', 'image', 'available', 'discount', 'category', 'attributes'
             'id', 'title', 'brand', 'description', 'slug', 'price', 'image', 'images', 'purchase_price', 'available', 'discount', 'category', 'attributes', 'product_code'
-        ]
+        ] 
         ref_name = "ShopProductSerializer"
 
     def create(self, validated_data):
@@ -134,6 +113,36 @@ class ProductSerializer(serializers.ModelSerializer):
 
         return representation
     
+    def update(self, instance, validated_data):
+        """ Оновлення продукту разом із атрибутами та зображеннями """
+        request = self.context.get('request')  # Отримуємо request
+        attributes_data = request.data.get('attributes', [])  # Отримуємо атрибути у форматі списку
+        images_data = request.FILES.getlist('images', [])  # Отримуємо файли
+
+        # 🔥 Оновлення основних полів продукту
+        instance = super().update(instance, validated_data)
+
+        # 🔥 Оновлення атрибутів
+        if attributes_data:
+            instance.product_attributes.all().delete()  # Видаляємо старі атрибути
+            for attr in attributes_data:
+                attribute_name = attr.get('attribute')
+                value = attr.get('value')
+
+                if not attribute_name or not value:
+                    continue  # Пропускаємо помилкові дані
+
+                # 🔥 Якщо атрибут існує → використовуємо його, якщо ні → створюємо
+                attribute, _ = Attribute.objects.get_or_create(name=attribute_name.strip())
+                ProductAttribute.objects.create(product=instance, attribute=attribute, value=value.strip())
+
+        # 🔥 Оновлення зображень
+        if images_data:
+            instance.images.all().delete()  # Видаляємо старі зображення
+            for image in images_data:
+                ProductImage.objects.create(product=instance, image=image)
+
+        return instance
 
 
 class ProductDetailtSerializer(serializers.ModelSerializer):

@@ -6,6 +6,14 @@ from . import views
 
 app_name = 'account'
 
+
+
+from django.urls import path
+from .views import MyTokenObtainPairView
+
+
+
+
 urlpatterns = [
     # Registration and Verification
     path('register/', views.register_user, name='register'),
@@ -55,4 +63,5 @@ urlpatterns = [
         ), 
         name='password-reset-complete'
     ),
+    #path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
 ]

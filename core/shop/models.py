@@ -15,6 +15,7 @@ from django.conf import settings
 
 
 
+
 class Category(models.Model):
     """
     A model representing a category in a store.
@@ -109,7 +110,7 @@ class Product(models.Model):
     discount = models.IntegerField(
         default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
     )
-    product_code = models.CharField("Код товару", max_length=50, unique=True, blank=True, null=True)
+    product_code = models.CharField("Код товару", max_length=50, unique=True, blank=False, null=False)
 
     class Meta:
         verbose_name = 'Продукт'

@@ -124,6 +124,8 @@ class ProductViewSet(ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         return super().create(request, *args, **kwargs)
+    
+    
 
 
 
