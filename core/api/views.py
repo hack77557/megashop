@@ -135,3 +135,30 @@ class ProtectedAPIView(APIView):
 
     def get(self, request):
         return Response({"message": "This is a protected view!"})
+
+
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
+from rest_framework.views import APIView
+
+class GetCSRFTokenView(APIView):
+    def get(self, request):
+        response = JsonResponse({"csrfToken": get_token(request)})
+        response["X-CSRFToken"] = get_token(request)  # Додаємо заголовок
+        return response
+    
+
+
+from rest_framework.permissions import AllowAny
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Your API",
+        default_version='v1',
+        description="API Documentation",
+    ),
+    public=True,  # ✅ Дозволяє доступ без авторизації
+    permission_classes=[AllowAny],  # ✅ Дозволяє всім переглядати Swagger
+)

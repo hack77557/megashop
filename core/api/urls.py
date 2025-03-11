@@ -16,7 +16,14 @@ from django.urls import path
 from django.urls import path, re_path
 from rest_framework import permissions
 
+from django.urls import path
+from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
+def get_csrf_token(request):
+    response = JsonResponse({"csrfToken": get_token(request)})
+    response["X-CSRFToken"] = get_token(request)
+    return response
 
 
 app_name = 'api'
@@ -33,7 +40,8 @@ schema_view = get_schema_view(
     #public=True,
     #permission_classes=(AllowAny,),
     public=True,
-    permission_classes=(permissions.AllowAny,),
+    #permission_classes=(permissions.AllowAny,),
+    permission_classes=[AllowAny],
 )
 
 
@@ -61,6 +69,7 @@ urlpatterns = [
     #path('shop/', include('shop.urls', namespace='shop')),
     #path('categories/', CategoryListView.as_view(), name='category-list'),
     #path('categories/<int:pk>/', CategoryDetailView.as_view(), name='category-detail'),
+    path('csrf/', get_csrf_token, name='get-csrf-token'),  # ✅ Додаємо ендпоінт для CSRF
 
 
 ]

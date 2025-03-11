@@ -40,12 +40,13 @@ ALLOWED_HOSTS = ['*']
 # Дозвіл для всіх джерел (НЕБЕЗПЕЧНО у продакшені):
 CORS_ALLOW_ALL_ORIGINS = True
 # Якщо ваш запит вимагає облікових даних (наприклад, cookie або токен), додайте:
-CORS_ALLOW_CREDENTIALS = True
+#CORS_ALLOW_CREDENTIALS = True
 # Якщо ваші запити використовують кастомні заголовки:
 CORS_ALLOW_HEADERS = [
     "content-type",
     "authorization",
     "Access-Control-Allow-Origin",
+    "X-CSRFToken",  # ✅ Додаємо CSRF-токен у дозволені заголовки
     # Інші заголовки, якщо потрібно
 ]
 
@@ -58,7 +59,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
     # Third party libraries
     'mathfilters',
     'crispy_forms',
@@ -69,11 +69,9 @@ INSTALLED_APPS = [
     'django_celery_results',
     'sorl.thumbnail',
     "django_htmx",
-    'rest_framework',
+    ##'rest_framework',
     'djoser',
     'drf_yasg',
-    
-    
     # Apps
     'shop.apps.ShopConfig',
     'cart.apps.CartConfig',
@@ -81,14 +79,21 @@ INSTALLED_APPS = [
     'payment.apps.PaymentConfig',
     'recommend.apps.RecommendConfig',
     'api.apps.ApiConfig',
-
     # CORS
-    "corsheaders",
+    ##"corsheaders",
 
-    'rest_framework_simplejwt',
+    ##'rest_framework_simplejwt',
     'eski',
     'django_cleanup.apps.CleanupConfig',
     'django_filters',
+
+
+    # Security apps
+    "axes",  # Brute-force protection
+    "auditlog",  # Logging user actions
+    "corsheaders",
+    "rest_framework",
+    "rest_framework_simplejwt",
 
 ]
 
@@ -102,6 +107,8 @@ MIDDLEWARE = [
     "django_htmx.middleware.HtmxMiddleware",
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+    "axes.middleware.AxesMiddleware",  # Brute-force protection
 
 ]
 
@@ -313,9 +320,11 @@ CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "rest_framework.authentication.SessionAuthentication",  # 🔥 HttpOnly cookies
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "api.permissions.IsAdminOrReadOnly",
+        "rest_framework.permissions.IsAuthenticated",
     ],
     'DEFAULT_THROTTLE_CLASSES': [
         #'rest_framework.throttling.AnonRateThrottle',
@@ -337,9 +346,10 @@ REST_FRAMEWORK = {
     #'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
 
     #'DEFAULT_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',  # <--- ДОДАНО
+    'EXCEPTION_HANDLER': 'rest_framework.views.exception_handler',  # Додай, якщо немає
 }
 
-
+'''
 # Authentication
 SIMPLE_JWT = {
     #'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
@@ -351,7 +361,8 @@ SIMPLE_JWT = {
     'BLACKLIST_AFTER_ROTATION': True,
     'UPDATE_LAST_LOGIN': True,
 }
-
+'''
+'''
 DJOSER = {
     "LOGIN_FIELD": "email",
     "SERIALIZERS": {
@@ -360,6 +371,19 @@ DJOSER = {
     },
     'AUTH_HEADER_TYPES': ('JWT',),
 }
+'''
+DJOSER = {
+    #"LOGIN_FIELD": "email",
+    "LOGIN_FIELD": "username",
+    "USER_CREATE_PASSWORD_RETYPE": True,
+    "SEND_ACTIVATION_EMAIL": False,
+    "SERIALIZERS": {
+        "user_create": "djoser.serializers.UserCreateSerializer",
+        "user": "djoser.serializers.UserSerializer",
+        "current_user": "account.serializers.CustomUserSerializer",  # Оновлюємо /users/me/
+    },
+}
+
 
 
 LOGGING = {
@@ -407,16 +431,28 @@ SWAGGER_SETTINGS = {
     ],
 }
 '''
+'''
 SWAGGER_SETTINGS = {
     #'DEFAULT_AUTO_SCHEMA_CLASS': 'api.schema.CustomAutoSchema',
     'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',
 }
-
+'''
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,  # ✅ Вимикає потребу логіну для Swagger
+    "SECURITY_DEFINITIONS": {
+        "Bearer": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header",
+        }
+    },
+    'DEFAULT_AUTO_SCHEMA_CLASS': 'drf_yasg.inspectors.SwaggerAutoSchema',
+}
 
 # Налаштування сесій через HttpOnly
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Використовуємо БД для збереження сесій
-SESSION_COOKIE_HTTPONLY = False  # Захист від доступу JavaScript                                     # Вимикає HttpOnly для сесійних cookies     True
-SESSION_COOKIE_SECURE = False  # Увімкнути лише у HTTPS (для локального сервера False)
+#SESSION_COOKIE_HTTPONLY = False  # Захист від доступу JavaScript                                     # Вимикає HttpOnly для сесійних cookies     True
+#SESSION_COOKIE_SECURE = False  # Увімкнути лише у HTTPS (для локального сервера False)
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Закривається разом із браузером
 
 
@@ -430,19 +466,73 @@ CORS_ALLOWED_ORIGINS = [
 '''
 #CORS_ALLOWED_ORIGINS = ['*']
 
-CSRF_COOKIE_HTTPONLY = False                                    # Вимикає HttpOnly     True
+#CSRF_COOKIE_HTTPONLY = False                                    # Вимикає HttpOnly     True
 #CSRF_TRUSTED_ORIGINS = ["http://localhost:3000"]
 #CSRF_TRUSTED_ORIGINS = ['*']
 
 
 
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",  # ✅ Дозволь запити з фронтенду Vue 3
+    "http://127.0.0.1:5173",
+    "http://192.168.163.10:5173",  # ✅ Додай правильний формат
+    "http://172.16.100.3",
+    "http://127.0.0.1:3000",
+    "https://yourdomain.com"
+]
+
+
+
+
+
+# Cookies & CSRF
+SESSION_COOKIE_HTTPONLY = True # Запобігає доступу через JavaScript
+SESSION_COOKIE_SECURE = False # Використовувати лише HTTPS   # Увімкнути лише у HTTPS (для локального сервера False)
+SESSION_COOKIE_SAMESITE = "Strict" # Запобігає CSRF-атакам
+##SESSION_COOKIE_SAMESITE = "None"  # ✅ Дозволяє передачу через `credentials: "include"`
+CSRF_COOKIE_HTTPONLY = True # Запобігає доступу до CSRF-токена через JS         ##################################  True ##################################
+CSRF_COOKIE_SECURE = False # Використовувати лише HTTPS                         ################################## Для локального сервера, у продакшені ставимо True
+#CSRF_COOKIE_SAMESITE = "Strict" # Посилений захист від CSRF
+##CSRF_COOKIE_SAMESITE = "None"  # ✅ Дозволяє використання у міжсайтовому контексті
+#CSRF_TRUSTED_ORIGINS = ["https://yourshop.com"]
 CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:5173",  # ✅ Додаємо фронтенд як довірену зону
+    "http://127.0.0.1:5173",
+    "http://192.168.163.10:8000",
     "http://192.168.163.10:5173",   # 🔹 Додай схему HTTP
     "http://127.0.0.1:3000",   # 🔹 Локальний хост
     "https://yourdomain.com"   # 🔹 Додай production-домен (якщо є)
+    
 ]
-CORS_ALLOWED_ORIGINS = [
-    "http://192.168.163.10:5173",  # ✅ Додай правильний формат
-    "http://127.0.0.1:3000",
-    "https://yourdomain.com"
+CSRF_COOKIE_NAME = "csrftoken"
+
+
+# HTTP security
+SECURE_BROWSER_XSS_FILTER = True # Захист від XSS
+SECURE_CONTENT_TYPE_NOSNIFF = True # Захист від Content-Type sniffing
+X_FRAME_OPTIONS = "DENY" # Захист від clickjacking
+SECURE_SSL_REDIRECT = False # Примусове перенаправлення на HTTPS               ##################################  True ##################################
+SECURE_HSTS_SECONDS = 31536000 # Увімкнення HSTS (1 рік)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# Django Axes
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1 # Блокування на 1 годину
+AXES_LOCKOUT_TEMPLATE = "errors/lockout.html"
+
+# SimpleJWT (Токени в HttpOnly cookies)
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    'UPDATE_LAST_LOGIN': True,
+}
+
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",  # ✅ Правильний бекенд для django-axes 5.0+
+    "django.contrib.auth.backends.ModelBackend",  # ✅ Стандартний бекенд Django
 ]

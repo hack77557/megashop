@@ -41,7 +41,8 @@ class ProductSerializer(serializers.ModelSerializer):
     Серіалізатор продукту для кошика.
     """
     current_price = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
+    #image = serializers.SerializerMethodField()
+    image = serializers.ImageField(read_only=True)
     discount = serializers.IntegerField()
 
     class Meta:
@@ -51,11 +52,11 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_current_price(self, obj):
         """Повертає поточну ціну з урахуванням знижки."""
         return obj.get_discounted_price()
-
+"""
     def get_image(self, obj):
-        """Повертає URL головного зображення товару."""
+        #Повертає URL головного зображення товару.
         return obj.image.url if obj.image else None
-
+"""
 
 class CartItemSerializer(serializers.ModelSerializer):
     """

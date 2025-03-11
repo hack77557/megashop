@@ -59,6 +59,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField("Активований", default=True)
     date_joined = models.DateTimeField("Дата реєстрації", default=timezone.now)
 
+    role = models.CharField(max_length=20, choices=[("admin", "Admin"), ("user", "User")], default="user")
+    refresh_token = models.CharField(max_length=255, blank=True, null=True)  # Збереження токена
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'
@@ -66,3 +69,4 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.username
+
