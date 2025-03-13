@@ -55,7 +55,11 @@ class ProductSerializer(serializers.ModelSerializer):
         attributes_data = request.POST.getlist('attributes')
         images_data = request.FILES.getlist('images')  # Отримуємо файли
 
-        #print("Received attributes_data:", attributes_data)  # 🔥 Додаємо логування
+        # ✅ Додаємо логування POST-запиту
+        #print("🟢 [POST] Отримано дані:")
+        #print("    - validated_data:", validated_data)
+        #print("    - attributes_data:", attributes_data)
+        #print("    - images_data:", images_data)
 
         product = Product.objects.create(**validated_data)
 
@@ -94,89 +98,37 @@ class ProductSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         """ Оновлення продукту разом із атрибутами та зображеннями """
         request = self.context.get("request")  # Отримуємо request
-        attributes_data = request.data.get("attributes", [])  # Отримуємо атрибути
+        attributes_data = request.POST.getlist("attributes")  # Отримуємо атрибути
         images_data = request.FILES.getlist("images", [])  # Отримуємо файли
 
-        print("🟢 Тип attributes_data:", type(attributes_data))
-        print("🟢 Отримані атрибути (attributes_data):", attributes_data)
-        print("🟢 Отримані файли (images_data):", images_data)
+        #print(f"🔵 [PUT] Отримані атрибути: {attributes_data}")
+        #print(f"🔵 [PUT] Отримані зображення: {images_data}")
 
         # 🔥 Оновлення основних полів продукту
         instance = super().update(instance, validated_data)
 
-        # 🔥 Переконуємося, що `attributes_data` є списком рядків
-        if isinstance(attributes_data, str):
-            attributes_data = [attributes_data]  # Якщо передано як рядок, перетворюємо в список
-
-        if not isinstance(attributes_data, list):
-            print(f"❌ Очікувався список, отримано: {type(attributes_data)}")
-            return instance  # Якщо дані некоректні, не оновлюємо атрибути
-
-        # 🔥 Оновлення атрибутів
-        instance.product_attributes.all().delete()  # Видаляємо старі атрибути
+        # 🔥 Видаляємо старі атрибути
+        instance.product_attributes.all().delete()
 
         for attr in attributes_data:
-            print(f"🔹 Обробка атрибута: {attr}")
-
-            if not isinstance(attr, str):
-                print(f"⚠️ Пропущено некоректний атрибут (очікується рядок): {attr}")
-                continue
-
-            attr = attr.strip()
-            if ":" not in attr:
-                print(f"⚠️ Пропущено некоректний формат атрибута (очікується 'Назва: Значення'): {attr}")
-                continue
-
+            print(f"🔹 [PUT] Обробка атрибута: {attr}")
             try:
                 attribute_name, value = attr.split(":", 1)
-                attribute_name, value = attribute_name.strip(), value.strip()
-            except ValueError:
-                print(f"⚠️ Помилка при розділенні атрибута: {attr}")
-                continue
-
-            if not attribute_name or not value:
-                print(f"⚠️ Пропущені значення для атрибута: {attr}")
-                continue
-
-            # 🔥 Якщо атрибут існує → використовуємо його, якщо ні → створюємо
-            attribute, _ = Attribute.objects.get_or_create(name=attribute_name)
-            ProductAttribute.objects.create(product=instance, attribute=attribute, value=value)
-
-            print(f"✅ Збережено атрибут: {attribute_name} = {value}")
-
-        return instance
-'''
-    def update(self, instance, validated_data):
-        """ Оновлення продукту разом із атрибутами та зображеннями """
-        request = self.context.get('request')  # Отримуємо request
-        attributes_data = request.data.get('attributes', [])  # Отримуємо атрибути у форматі списку
-        images_data = request.FILES.getlist('images', [])  # Отримуємо файли
-
-        # 🔥 Оновлення основних полів продукту
-        instance = super().update(instance, validated_data)
-
-        # 🔥 Оновлення атрибутів
-        if attributes_data:
-            instance.product_attributes.all().delete()  # Видаляємо старі атрибути
-            for attr in attributes_data:
-                attribute_name = attr.get('attribute')
-                value = attr.get('value')
-
-                if not attribute_name or not value:
-                    continue  # Пропускаємо помилкові дані
-
-                # 🔥 Якщо атрибут існує → використовуємо його, якщо ні → створюємо
                 attribute, _ = Attribute.objects.get_or_create(name=attribute_name.strip())
                 ProductAttribute.objects.create(product=instance, attribute=attribute, value=value.strip())
+                print(f"✅ [PUT] Збережено атрибут: {attribute_name} = {value}")
+            except ValueError:
+                print(f"⚠️ [PUT] Помилка при обробці атрибута: {attr}")
 
         # 🔥 Оновлення зображень
         if images_data:
-            instance.images.all().delete()  # Видаляємо старі зображення
+            instance.images.all().delete()
             for image in images_data:
                 ProductImage.objects.create(product=instance, image=image)
 
         return instance
-'''
+ 
+
 
 class ProductDetailtSerializer(serializers.ModelSerializer):
     attributes = ProductAttributeSerializer(source='product_attributes', many=True)  # Пов'язане поле

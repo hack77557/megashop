@@ -342,7 +342,7 @@ class LoginView(APIView):
             return response
 
         return JsonResponse({"error": "Invalid credentials"}, status=401)
-
+'''
 # ✅ Логаут: Видалення токенів
 class LogoutView(APIView):
     """
@@ -361,6 +361,39 @@ class LogoutView(APIView):
         response = JsonResponse({"message": "Logged out"})
         response.delete_cookie("access_token")
         response.delete_cookie("refresh_token")
+        return response
+'''
+################################################################################ РОБОЧИЙ ВАРІАНТ ################################################################################
+from django.contrib.auth import logout
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+
+class LogoutView(APIView):
+    """
+    Вихід користувача, повне очищення сесії та JWT.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+
+        # 🔥 Видаляємо refresh-токен з бази (якщо є)
+        if hasattr(user, "refresh_token"):
+            user.refresh_token = None
+            user.save()
+
+        # 🔥 Виконуємо logout у системі (якщо використовується SessionAuthentication)
+        logout(request)
+
+        response = JsonResponse({"message": "Logged out"})
+
+        # 🔥 Видаляємо всі кукі, щоб браузер їх більше не відправляв
+        response.delete_cookie("access_token")
+        response.delete_cookie("refresh_token")
+        response.delete_cookie("sessionid")
+        response.delete_cookie("csrftoken")
+
         return response
 
 
