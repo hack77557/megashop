@@ -12985,3 +12985,4 @@ Unauthorized: /eski/categories/
 Unauthorized: /account/api/login/
 Not Found: /favicon.ico
 Method Not Allowed: /api/v1/auth/jwt/create/
+Bad Request: /eski/products/
